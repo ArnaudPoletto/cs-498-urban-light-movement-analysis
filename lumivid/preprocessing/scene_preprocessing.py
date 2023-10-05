@@ -1,8 +1,8 @@
 # Ensure that the current working directory is this file
 import sys
 from pathlib import Path
-CURRENT_DIR = Path(__file__).parent
-sys.path.append(str(CURRENT_DIR / '..'))
+GLOBAL_DIR = Path(__file__).parent / '..' / '..'
+sys.path.append(str(GLOBAL_DIR))
 
 from typing import Tuple
 
@@ -13,9 +13,9 @@ import numpy as np
 from tqdm import tqdm
 from multiprocessing import Process
 
-from utils.video_utils import get_video, get_frame_mask, apply_frame_mask
+from lumivid.utils.video_utils import get_video, get_frame_mask, apply_frame_mask
 
-DATA_PATH = '../../data/'
+DATA_PATH = str(GLOBAL_DIR / 'data') + '/'
 PREPROCESSING_DATA_PATH = DATA_PATH + 'preprocessing/'
 
 RAW_SCENES_PATH = PREPROCESSING_DATA_PATH + 'raw_scenes/'
