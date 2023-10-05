@@ -1,3 +1,8 @@
+# Data
+data/preprocessing/raw_scenes/*
+data/preprocessing/processed_scenes/*
+data/preprocessing/processed_reframed_scenes/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
