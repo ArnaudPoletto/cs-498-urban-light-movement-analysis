@@ -1,8 +1,13 @@
+# Ensure that the current working directory is this file
+from pathlib import Path
+CURRENT_DIR = Path(__file__).parent
+
 import os
 import cv2
 import numpy as np
+from pathlib import Path
 
-DATA_PATH = '../../data/'
+DATA_PATH = str(CURRENT_DIR / '..' / '..' / 'data') + '/'
 
 LEFT_MASK_PATH = DATA_PATH + 'left_mask.png'
 RIGHT_MASK_PATH = DATA_PATH + 'right_mask.png'

@@ -44,4 +44,9 @@ Basic techniques like thresholding, clustering, superpixels, and edge detection 
 
 #### Challenges and Solutions
 
+## ⌨️ Commands
+```
+pip install -e .
+```
+
 _Note: This README is a template and will be updated as the project progresses._

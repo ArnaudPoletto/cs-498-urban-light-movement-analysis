@@ -1,3 +1,9 @@
+# Ensure that the current working directory is this file
+import sys
+from pathlib import Path
+CURRENT_DIR = Path(__file__).parent
+sys.path.append(str(CURRENT_DIR / '..'))
+
 from typing import Tuple
 
 import os
@@ -7,7 +13,6 @@ import numpy as np
 from tqdm import tqdm
 from multiprocessing import Process
 
-sys.path.append('../')
 from utils.video_utils import get_video, get_frame_mask, apply_frame_mask
 
 DATA_PATH = '../../data/'
