@@ -1,7 +1,6 @@
 # Data
-data/preprocessing/raw_scenes/*
-data/preprocessing/processed_scenes/*
-data/preprocessing/processed_reframed_scenes/*
+data/preprocessing/*
+data/sky_ground_segmentation/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
