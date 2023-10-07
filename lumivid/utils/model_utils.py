@@ -140,6 +140,22 @@ def train(
                     
             bar.update(1)
 
+def load_model(model: nn.Module, model_save_path: str, force: bool = False) -> None:
+    """
+    Load model from path.
+
+    Args:
+        model (nn.Module): Model.
+        model_save_path (str): Path to model.
+        force (bool): Whether to force loading the model.
+    """
+
+    if os.path.exists(model_save_path) or force:
+        model.load_state_dict(torch.load(model_save_path))
+        print(f"✅ Loaded model from {model_save_path}")
+    else:
+        print("❌ Model not loaded.")
+
 def get_class_weights(dataloader, n_classes=2, n_samples=1000):
     """
     Get class weights for a given dataloader.
@@ -171,13 +187,13 @@ def get_class_weights(dataloader, n_classes=2, n_samples=1000):
 
     class_weights = class_weights / np.sum(class_weights)
     class_weights = 1 / class_weights
-    class_weights = class_weights / np.sum(class_weights)
 
     return class_weights
 
 def show_learning_curves(
     model_file_dir: str,
     default_max_steps: int,
+    y_lim = (0.001, None),
     color_dict: dict = {},
     window_size: int = 4,
     ):
@@ -187,6 +203,7 @@ def show_learning_curves(
     Args:
         model_file_dir (str): Path to directory containing model files.
         default_max_steps (int): Default maximum number of steps.
+        y_lim (tuple): Y-axis limits.
         color_dict (dict): Dictionary mapping model names to colors.
         window_size (int): Window size for smoothing.
     """
@@ -203,17 +220,16 @@ def show_learning_curves(
             moving_avgs (list): Smoothed data.
         """
         
-        cumsum = [0]
         moving_avgs = []
-        for i, x in enumerate(data, 1):
-            cumsum.append(cumsum[i-1] + x)
-            if i >= window_size:
-                moving_avg = (cumsum[i] - cumsum[i-window_size]) / window_size
-                moving_avgs.append(moving_avg)
+        for i, _ in enumerate(data, 1):
+            if i < window_size:
+                avg = sum(data[:i]) / i
             else:
-                moving_avgs.append(x)  # Keep original data points until window is full
+                avg = sum(data[i-window_size:i]) / window_size
+            moving_avgs.append(avg)
 
         return moving_avgs
+
 
     model_file_paths = sorted([os.path.join(model_file_dir, filename) for filename in os.listdir(model_file_dir) if filename.endswith(".csv")])
     validation_lossess = []
@@ -242,5 +258,6 @@ def show_learning_curves(
     plt.xlabel("Steps")
     plt.ylabel("Cross-Entropy Loss")
     plt.xlim(0, None)
+    plt.ylim(y_lim)
     plt.legend()
     plt.show()

@@ -17,9 +17,9 @@ import torchvision.models.segmentation as models
 
 TRAIN_SPLIT, TEST_SPLIT, VAL_SPLIT = 0.9, 0.095, 0.005
 EPOCHS = 4
-BATCH_SIZE = 4
-ACCUMULATION_STEPS = 8
-VALIDATION_STEPS = 400
+BATCH_SIZE = 8
+ACCUMULATION_STEPS = 4
+VALIDATION_STEPS = 200
 LEARNING_RATE = 0.001
 EPSILON = 1e-12
 BETAS = (0.95, 0.999)
@@ -27,7 +27,7 @@ WEIGHT_DECAY = 0.01
 STEP_SIZE = 50
 GAMMA = 0.97
 
-CLASS_WEIGHTS = torch.tensor([[0.41311038, 0.58688962]])
+CLASS_WEIGHTS = torch.tensor([[1.74659714, 2.33941044]])
 CLASS_WEIGHTS = CLASS_WEIGHTS.view(1, 2, 1, 1)
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
