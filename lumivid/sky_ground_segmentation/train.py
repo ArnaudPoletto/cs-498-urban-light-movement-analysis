@@ -6,8 +6,9 @@ sys.path.append(str(GLOBAL_DIR))
 
 from ranger_adabelief import RangerAdaBelief # https://github.com/juntang-zhuang/Adabelief-Optimizer
 
-from lumivid.sky_ground_segmentation.dataset import get_dataloaders
 from lumivid.utils.model_utils import train
+from lumivid.utils.random_utils import set_seed
+from lumivid.sky_ground_segmentation.dataset import get_dataloaders
 
 import torch
 from torch import nn
@@ -17,8 +18,8 @@ import torchvision.models.segmentation as models
 
 TRAIN_SPLIT, TEST_SPLIT, VAL_SPLIT = 0.9, 0.095, 0.005
 EPOCHS = 4
-BATCH_SIZE = 8
-ACCUMULATION_STEPS = 4
+BATCH_SIZE = 4
+ACCUMULATION_STEPS = 8
 VALIDATION_STEPS = 200
 LEARNING_RATE = 0.001
 EPSILON = 1e-12
@@ -27,10 +28,12 @@ WEIGHT_DECAY = 0.01
 STEP_SIZE = 50
 GAMMA = 0.97
 
-CLASS_WEIGHTS = torch.tensor([[1.74659714, 2.33941044]])
+CLASS_WEIGHTS = torch.tensor([[1.68795506, 2.45358333]])
 CLASS_WEIGHTS = CLASS_WEIGHTS.view(1, 2, 1, 1)
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+SEED = 27
 
 def get_model(model_type: str, n_classes: int = 2, pretrained: bool = True) -> nn.Module:
     """
@@ -197,6 +200,9 @@ def ask_optimizer():
     return int_to_optimizer[optimizer_type]
 
 if __name__ == '__main__':
+    # Set seed for deterministic results
+    set_seed(SEED)
+
     model_type = ask_model()
     pretrained = ask_pretrained()
     optimizer_type = ask_optimizer()

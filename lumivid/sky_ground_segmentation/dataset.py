@@ -7,6 +7,7 @@ sys.path.append(str(GLOBAL_DIR))
 from typing import Tuple, List
 
 import os
+import random
 import numpy as np
 from PIL import Image
 
@@ -19,7 +20,9 @@ from albumentations import (
 from albumentations.pytorch import ToTensorV2
 
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
+
+from lumivid.utils.data_utils import UnseededDataLoader, SeededDataLoader
 
 DATA_PATH = str(GLOBAL_DIR / 'data') + '/'
 SGS_DATA_PATH = DATA_PATH + "sky_ground_segmentation/"
@@ -58,6 +61,8 @@ IMAGENET_STD = [0.229, 0.224, 0.225]
 N_TRAIN_WORKERS, N_TEST_WORKERS, N_VAL_WORKERS = 8, 8, 0
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+SEED = 42
 
 class SGSegmentationDataset(torch.utils.data.Dataset):
     """
@@ -98,9 +103,10 @@ class SGSegmentationDataset(torch.utils.data.Dataset):
             HorizontalFlip(p=0.5),
             OneOf([
                 OpticalDistortion(p=0.3),
-                GridDistortion(p=.1),
+                GridDistortion(p=0.1),
                 ElasticTransform(p=0.3),
-            ], p=0.5)
+            ], p=0.5),
+            ShiftScaleRotate(shift_limit=0.05, scale_limit=0.05, rotate_limit=15, value=(0, 0, 0), border_mode=0, p=0.5),
         ])
 
         self.common_transforms = deterministic_common_transforms if self.deterministic else undeterministic_common_transforms
@@ -260,13 +266,13 @@ def get_dataloaders(train_split: float, test_split: float, batch_size: int, use_
 
     # Data loaders
     train_dataset = SGSegmentationDataset(train_input_paths, train_mask_paths, deterministic=False)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=N_TRAIN_WORKERS if use_workers else 0)
+    train_loader = UnseededDataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=N_TRAIN_WORKERS if use_workers else 0)
 
     test_dataset = SGSegmentationDataset(test_input_paths, test_mask_paths, deterministic=True)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=N_TEST_WORKERS if use_workers else 0)
+    test_loader = SeededDataLoader(SEED, test_dataset, batch_size=batch_size, shuffle=False, num_workers=N_TEST_WORKERS if use_workers else 0)
 
     val_dataset = SGSegmentationDataset(val_input_paths, val_mask_paths, deterministic=True)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=N_VAL_WORKERS if use_workers else 0)
+    val_loader = SeededDataLoader(SEED, val_dataset, batch_size=batch_size, shuffle=False, num_workers=N_VAL_WORKERS if use_workers else 0)
 
     print("")
     print("➡️ Number of train images:", len(train_input_paths))
