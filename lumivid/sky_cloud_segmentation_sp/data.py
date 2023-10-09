@@ -19,6 +19,7 @@ SCS_DATA_PATH = DATA_PATH + 'sky_cloud_segmentation/'
 
 SKY_FINDER_SEG_PATH = SCS_DATA_PATH + "sky_finder_segmented/"
 SKY_FINDER_SEG_INPUTS_PATH = SKY_FINDER_SEG_PATH + "filtered_images/"
+SKY_FINDER_SEG_LABELS_PATH = SKY_FINDER_SEG_PATH + "labels/"
 SKY_FINDER_SEG_MASKS_PATH = SKY_FINDER_SEG_PATH + "masks/"
 
 from lumivid.sky_cloud_segmentation_sp.visual_words import get_image_channels, get_visual_word_indices
@@ -54,7 +55,8 @@ def get_segment_data(
         image: Image.Image, 
         ground_mask: Image.Image = None,
         sky_mask: Image.Image = None,
-        cloud_mask: Image.Image = None, 
+        light_cloud_mask: Image.Image = None, 
+        thick_cloud_mask: Image.Image = None,
         n_segments: int = 100,
         compactness: float = 10,
         sigma: float = 0,
@@ -62,21 +64,27 @@ def get_segment_data(
         n_color_bins: int = 10,
         visual_words: np.ndarray = None,
         patch_size: int = None,
-        selected_features: List[str] = ['mean', 'std', 'entropy', 'color', 'bow', 'texture']
+        selected_features: List[str] = ['mean', 'std', 'entropy', 'color', 'bow', 'texture'],
+        separate_clouds: bool = False
         ):
     """
     Get features from image and segments.
 
     Args:
-        image (Image.Image): Image.
-        ground_mask (Image.Image): Ground mask.
-        sky_mask (Image.Image): Sky mask.
-        cloud_mask (Image.Image): Cloud mask.
-        n_segments (int): Number of segments.
-        compactness (float): Compactness.
-        sigma (float): Sigma.
-        n_entropy_bins (int): Number of entropy bins.
-        n_color_bins (int): Number of color bins.
+        image: Image.
+        ground_mask: Ground mask.
+        sky_mask: Sky mask.
+        light_cloud_mask: Light cloud mask.
+        thick_cloud_mask: Thick cloud mask.
+        n_segments: Number of segments for SLIC.
+        compactness: Compactness parameter for SLIC.
+        sigma: Sigma parameter for SLIC.
+        n_entropy_bins: Number of bins for entropy.
+        n_color_bins: Number of bins for color.
+        visual_words: Visual words.
+        patch_size: Size of patches.
+        selected_features: List of selected features.
+        separate_clouds: Whether to separate cloud classes in mask and ground truth labels.
 
     Returns:
         np.ndarray: Input features.
@@ -211,16 +219,22 @@ def get_segment_data(
     features = np.array(features)
 
     # Get ground truth labels if masks are given
-    if ground_mask is None or sky_mask is None or cloud_mask is None:
+    if ground_mask is None or sky_mask is None or light_cloud_mask is None or thick_cloud_mask is None:
         labels = None
     else:
         labels = np.zeros(n_segments)
         # Get most common label for each segment
         for i in range(n_segments):
-            n_ground = ground_mask[segments == i+1].sum()
             n_sky = sky_mask[segments == i+1].sum()
-            n_cloud = cloud_mask[segments == i+1].sum()
-            labels[i] = np.argmax([n_ground, n_sky, n_cloud])
+
+            # If separate clouds, get 2 classes for clouds
+            if separate_clouds:
+                n_light_cloud = light_cloud_mask[segments == i+1].sum()
+                n_thick_cloud = thick_cloud_mask[segments == i+1].sum()
+                labels[i] = np.argmax([n_sky, n_light_cloud, n_thick_cloud])
+            else:
+                n_cloud = light_cloud_mask[segments == i+1].sum() + thick_cloud_mask[segments == i+1].sum()
+                labels[i] = np.argmax([n_sky, n_cloud])
 
     return segments, features, labels
 
@@ -235,6 +249,7 @@ def get_data_paths():
 
     input_paths = []
     mask_paths = []
+    label_paths = []
 
     # Sky finder segmented
     input_folder_paths = sorted([os.path.join(SKY_FINDER_SEG_INPUTS_PATH, folder) for folder in os.listdir(SKY_FINDER_SEG_INPUTS_PATH)])
@@ -242,9 +257,11 @@ def get_data_paths():
         image_paths = sorted([os.path.join(folder_path, filename) for filename in os.listdir(folder_path)])
         for image_path in image_paths:
             input_paths.append(image_path)
-            mask_paths.append(image_path.replace(SKY_FINDER_SEG_INPUTS_PATH, SKY_FINDER_SEG_MASKS_PATH).replace(".jpg", ".png"))
+            folder = folder_path.split("/")[-1]
+            mask_paths.append(f"{SKY_FINDER_SEG_MASKS_PATH}{folder}.png")
+            label_paths.append(image_path.replace(SKY_FINDER_SEG_INPUTS_PATH, SKY_FINDER_SEG_LABELS_PATH).replace(".jpg", ".png"))
 
-    return input_paths, mask_paths
+    return input_paths, mask_paths, label_paths
 
 def get_data(
         image_width: int,
@@ -257,7 +274,8 @@ def get_data(
         visual_words: np.ndarray = None,
         patch_size: int = None,
         train_split: float = 0.8,
-        selected_features: List[str] = ['mean', 'std', 'entropy', 'color', 'bow', 'texture']
+        selected_features: List[str] = ['mean', 'std', 'entropy', 'color', 'bow', 'texture'],
+        separate_clouds: bool = False
         ):
     """
     Returns a dataset of features and labels.
@@ -273,28 +291,38 @@ def get_data(
         dataset: Dataset of unnormalized features and labels.
     """
 
-    input_paths, mask_paths = get_data_paths()
+    input_paths, mask_paths, label_paths = get_data_paths()
 
     X = np.array([])
     y = np.array([])
-    for input_path, mask_path in tqdm(zip(input_paths, mask_paths), total=len(input_paths), desc="▶️ Extracting features"):
+    for input_path, mask_path, label_path in tqdm(zip(input_paths, mask_paths, label_paths), total=len(input_paths), desc="▶️ Extracting features"):
         # Get image and mask
         image = Image.open(input_path).resize((image_width, image_height))
-        mask_image = Image.open(mask_path).resize((image_width, image_height))
+        mask = Image.open(mask_path).resize((image_width, image_height))
+        label = Image.open(label_path).resize((image_width, image_height))
 
-        r_mask = np.array(mask_image)[:, :, 0]
-        g_mask = np.array(mask_image)[:, :, 1]
-        b_mask = np.array(mask_image)[:, :, 2]
+        # Apply mask to image
+        image = np.array(image)
+        mask = np.array(mask)
+        label = np.array(label)
+        image = image * mask[:, :, np.newaxis]
+        image = Image.fromarray(image)
 
-        ground_mask = np.where(r_mask + g_mask + b_mask < 10, 1, 0).astype(bool)
-        sky_mask = np.where(b_mask - r_mask - g_mask > 245, 1, 0).astype(bool)
-        cloud_mask = np.where(ground_mask + sky_mask == 0, 1, 0).astype(bool)
+        r_label = label[:, :, 0]
+        g_label = label[:, :, 1]
+        b_label = label[:, :, 2]
+
+        ground_mask = np.where(r_label + g_label + b_label < 10, 1, 0).astype(bool)
+        sky_mask = np.where(b_label - r_label - g_label > 245, 1, 0).astype(bool)
+        light_cloud_mask = np.where(g_label - r_label - b_label > 245, 1, 0).astype(bool)
+        thick_cloud_mask = np.where(r_label - g_label - b_label > 245, 1, 0).astype(bool)
 
         _, Xi, yi = get_segment_data(
             image,
             ground_mask,
             sky_mask,
-            cloud_mask,
+            light_cloud_mask,
+            thick_cloud_mask,
             n_segments = n_segments,
             compactness = compactness,
             sigma = sigma,
@@ -302,7 +330,8 @@ def get_data(
             n_color_bins = n_color_bins,
             visual_words = visual_words,
             patch_size = patch_size,
-            selected_features = selected_features
+            selected_features = selected_features,
+            separate_clouds = separate_clouds
             )
         
         X = np.concatenate((X, Xi), axis=0) if X.size else Xi
