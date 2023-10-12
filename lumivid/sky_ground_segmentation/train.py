@@ -17,7 +17,7 @@ from torch.optim import lr_scheduler
 import torchvision.models.segmentation as models
 
 TRAIN_SPLIT, TEST_SPLIT, VAL_SPLIT = 0.9, 0.095, 0.005
-EPOCHS = 4
+EPOCHS = 2
 BATCH_SIZE = 4
 ACCUMULATION_STEPS = 8
 VALIDATION_STEPS = 200
@@ -49,7 +49,6 @@ def get_model(model_type: str, n_classes: int = 2, pretrained: bool = True) -> n
     """
     
     assert model_type in ['deeplabv3resnet101', 'deeplabv3resnet50', 'deeplabv3mobilenetv3large'], f"❌ Invalid model type: {model_type}."
-    assert n_classes in [2, 21], f"❌ Invalid number of classes: {n_classes}."
 
     # Get model type
     if model_type == 'deeplabv3resnet101':

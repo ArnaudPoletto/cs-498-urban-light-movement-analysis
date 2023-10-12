@@ -2,6 +2,7 @@
 data/preprocessing/*
 data/sky_ground_segmentation/*
 data/sky_cloud_segmentation/*
+data/BACKUP/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

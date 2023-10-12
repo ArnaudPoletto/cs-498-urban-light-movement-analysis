@@ -177,7 +177,7 @@ class SGSegmentationDataset(torch.utils.data.Dataset):
         mask_image[mask_image <= 0.5] = 0.
         mask_image = torch.cat((1. - mask_image, mask_image), dim=0)
 
-        return input_image.to(DEVICE), mask_image.to(DEVICE)
+        return input_image, mask_image
     
 def get_dataloaders(train_split: float, test_split: float, batch_size: int, use_workers: bool = True) -> Tuple[DataLoader, DataLoader, DataLoader]:
     """

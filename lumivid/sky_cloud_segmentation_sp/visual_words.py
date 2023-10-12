@@ -25,8 +25,8 @@ SKY_FINDER_PATH = SCS_DATA_PATH + "sky_finder/"
 SKY_FINDER_INPUTS_PATH = SKY_FINDER_PATH + "images/"
 SKY_FINDER_MASKS_PATH = SKY_FINDER_PATH + "masks/"
 
-PATCH_MEAN = [170.50721488, 42.75232128, 0.88888601]
-PATCH_STD = [54.00342012, 41.27330411, 0.26348232]
+PATCH_MEAN = [168.01883116, 180.31450928, 189.57850458]
+PATCH_STD = [59.53992373, 54.00752763, 52.54329265]
 
 def get_image_channels(image: np.ndarray) -> np.ndarray:
     """
@@ -37,6 +37,7 @@ def get_image_channels(image: np.ndarray) -> np.ndarray:
         
     Returns:
         np.ndarray: Image features.
+        list: Value ranges of image features.
     """
 
     # Get image features
@@ -46,7 +47,10 @@ def get_image_channels(image: np.ndarray) -> np.ndarray:
     image_r_over_b = np.divide(image_red, image_blue, out=np.zeros_like(image_red).astype(float), where=image_blue!=0)
     image = np.stack([image_red, image_saturation, image_r_over_b], axis=-1)
 
-    return image
+    # Get value ranges of image features
+    value_ranges = [(0, 255), (0, 255), (0, 10)]
+
+    return image, value_ranges
 
 class SCRandomPatchesDataset(torch.utils.data.Dataset):
     """
@@ -72,12 +76,17 @@ class SCRandomPatchesDataset(torch.utils.data.Dataset):
             while patch is None and tries < n_tries:
                 x = np.random.randint(patch_size//2, image_width + patch_size//2)
                 y = np.random.randint(patch_size//2, image_height + patch_size//2)
-                if mask[y, x]:
-                    image_patch = image[y-patch_size//2:y+patch_size//2+1, x-patch_size//2:x+patch_size//2+1]
-                    patch = (image_patch - PATCH_MEAN) / PATCH_STD
+                mask_patch = mask[y-patch_size//2:y+patch_size//2+1, x-patch_size//2:x+patch_size//2+1]
+                image_patch = image[y-patch_size//2:y+patch_size//2+1, x-patch_size//2:x+patch_size//2+1]
+                if np.all(mask_patch) and np.all(image_patch > 0):
+                    patch = image_patch
+                    patch = (patch - PATCH_MEAN) / PATCH_STD
+
                 tries += 1
+
             if patch is not None:
                 patches.append(patch)
+
         return patches
 
     def get_patches(
@@ -88,7 +97,7 @@ class SCRandomPatchesDataset(torch.utils.data.Dataset):
             image_height: int,
             patch_size: int, 
             n_patches: int, 
-            n_tries: int = 10
+            n_tries: int = 100
             ) -> List[np.ndarray]:
 
         assert n_patches > 0 and patch_size % 2 == 1 and n_tries > 0
@@ -102,7 +111,7 @@ class SCRandomPatchesDataset(torch.utils.data.Dataset):
 
         # Add padding to images and masks
         images = [np.pad(image, ((patch_size//2, patch_size//2), (patch_size//2, patch_size//2), (0, 0)), mode="reflect") for image in images]
-        masks = [np.pad(mask, ((patch_size//2, patch_size//2), (patch_size//2, patch_size//2)), mode="constant", constant_values=False) for mask in masks]
+        masks = [np.pad(mask, ((patch_size//2, patch_size//2), (patch_size//2, patch_size//2)), mode="reflect") for mask in masks]
 
         # Generate patches using multiprocessing
         n_patches_per_image = n_patches // len(images)
@@ -260,7 +269,8 @@ def get_visual_words(
         patch_size: int, 
         n_patches: int, 
         n_visual_words: int,
-        show_tsne: bool = False
+        show_tsne: bool = False,
+        n_subsamples: int = 10_000
         ) -> np.ndarray:
     """
     Get visual words from dataset.
@@ -270,12 +280,31 @@ def get_visual_words(
     """
 
     dataset = _get_dataset(image_width, image_height, patch_size, n_patches)
+
     X = _get_X(dataset)
     visual_words, cluster_labels = _apply_kmeans(X, n_visual_words)
 
     if show_tsne:
-        _show_tsne(X, cluster_labels)
+        indexes = np.random.choice(X.shape[0], n_subsamples, replace=False)
+        X_sub = X[indexes]
+        cluster_labels_sub = cluster_labels[indexes]
+        _show_tsne(X_sub, cluster_labels_sub)
 
     return visual_words
+
+def show_visual_words(visual_words: np.ndarray, patch_size: int, width: int = 10):
+    n_visual_words = visual_words.shape[0]
+    height = int(np.ceil(n_visual_words / width))
+
+    plt.figure(figsize=(width, height))
+    for i in range(n_visual_words):
+        plt.subplot(height, width, i+1)
+        visual_word = visual_words[i].reshape(patch_size, patch_size, 3)
+        visual_word = (visual_word * PATCH_STD) + PATCH_MEAN
+        visual_word = np.clip(visual_word, 0, 255).astype(np.uint8)
+        plt.imshow(visual_word)
+        plt.axis('off')
+
+    plt.show()
 
 
