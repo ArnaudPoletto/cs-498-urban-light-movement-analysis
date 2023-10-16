@@ -40,9 +40,30 @@ Basic techniques like thresholding, clustering, superpixels, and edge detection 
 
 #### Objectives
 
+- [x] Create segmentation dataset for sky/cloud segmentation.
+- [x] Work on sky/cloud segmentation.
+
 #### Progress
 
+This week, I dived into the sky/cloud segmentation process. The initial approach involved utilizing superpixels and a decision tree classifier for segmenting and classifying various sections of the sky. Each superpixel in an image was analyzed based on its descriptor vector.
+
 #### Challenges and Solutions
+
+While this approach was generally effective, it encountered limitations in distinguishing complex cloud formations and varied lighting conditions. In certain scenarios, the algorithm misclassified cloud features, underscoring the need for refinement. I decided to use deep learning to improve the performance of the algorithm in the next week.
+
+### Week 04
+
+#### Objectives
+
+- [x] Work on sky/cloud segmentation using deep learning.
+
+#### Progress
+
+This week, I implemented a deep learning model for sky/cloud segmentation. I used the DeepLabV3 architecture with a ResNet-101 backbone. The model was trained on the previously made custom dataset. The model was able to accurately segment the sky and clouds in the test images.
+
+#### Challenges and Solutions
+
+Overall, the model performed well, but it was unable to accurately segment the sky in certain scenarios. This was due to the lack of sufficient training data. In the upcoming weeks, I will focus on detecting changes in light within the sky and utilize optical flow to track motion.
 
 ## ⌨️ Commands
 ```
