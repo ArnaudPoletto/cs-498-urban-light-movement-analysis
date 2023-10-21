@@ -65,6 +65,35 @@ This week, I implemented a deep learning model for sky/cloud segmentation. I use
 
 Overall, the model performed well, but it was unable to accurately segment the sky in certain scenarios. This was due to the lack of sufficient training data. In the upcoming weeks, I will focus on detecting changes in light within the sky and utilize optical flow to track motion.
 
+### Week 05
+
+#### Objectives
+
+- [x] Work on lighting analysis from consecutive video frames.
+
+#### Progress
+
+This week focused heavily on conducting an in-depth analysis of lighting variations captured in consecutive video frames. The primary objective was to develop a robust methodology to quantitatively measure and characterize these lighting changes, enabling the identification and analysis of patterns and anomalies.
+
+**Global Lighting Evaluation** was conducted, utilizing several statistical evaluations. By computing the properties between video frames at 3-second intervals, I was able to observe both abrupt and gradual changes in lighting. Four methods were employed:
+
+- **L1 Difference**: Measuring the absolute differences in pixel values between consecutive frames helped identify abrupt changes in lighting.
+- **Mean Value Difference**: This metric was instrumental in tracking gradual changes in lighting by computing the average pixel value differences between frames.
+- **Brightness Offset Detection**: Utilized histogram peak detection to identify shifts in the overall brightness of the scene.
+- **Earth Mover’s Distance**: This method was used to capture the dissimilarity between two sequential frame histograms, offering insights into the global changes in brightness and color distribution.
+
+The **Dual-Zone Lighting Evaluation** was another focal point. I applied Otsu’s method on the L channel from LAB to segment the sky into light and dark zones. This segmentation was conducted at different granularities, including superpixel and pixel levels. Four statistical evaluations were applied:
+- **Percentage of Light Pixels**: This quantified the proportion of lighter pixels in the frames, offering insights into the overall brightness.
+- **Signed Difference in Percentage of Light Pixels**: This helped in identifying the variations in the proportion of light pixels between consecutive frames.
+- **L1 Difference between Lighting Masks**: This measurement offered insights into the abrupt changes in lighting conditions.
+- **Mean Value Difference for Light/Dark Areas**: This metric aided in assessing the gradual variations in both light and dark areas.
+
+Lastly, the **Optical Flow's Farneback Algorithm** was employed to obtain optical flow vectors from consecutive frames using the L channel of the LAB color space. This allowed for a detailed analysis of the movement and changes in lighting, contributing to a comprehensive understanding of the dynamic lighting conditions.
+
+#### Challenges and Solutions
+
+The computation of statistical properties between video frames at 3-second intervals presented challenges in terms of processing time and data management. The segmentation of the sky into light and dark zones was initially inconsistent, leading to unreliable data. Additional efforts and refinements are required to optimize the computational efficiency and enhance the consistency of sky segmentation if these methodologies prove to be valuable in our ongoing lighting analysis.
+
 ## ⌨️ Commands
 ```
 pip install -e .

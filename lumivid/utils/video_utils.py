@@ -27,13 +27,13 @@ def get_video(video_path: str) -> cv2.VideoCapture:
 
     return cv2.VideoCapture(video_path)
 
-def get_frame_mask(type: str, reframe: bool = False) -> np.ndarray:
+def get_frame_mask(type: str, reframed: bool = False) -> np.ndarray:
     """
     Returns the left or right mask, optionally reframed.
 
     Args:
         type (str): Type of mask to be returned.
-        reframe (bool): Whether to reframe the mask.
+        reframed (bool): Whether to reframe the mask.
 
     Returns:
         mask (np.ndarray): Left or right mask, with values in [0, 1].
@@ -44,7 +44,7 @@ def get_frame_mask(type: str, reframe: bool = False) -> np.ndarray:
     mask = cv2.imread(LEFT_MASK_PATH, cv2.IMREAD_GRAYSCALE) if type == 'left' else cv2.imread(RIGHT_MASK_PATH, cv2.IMREAD_GRAYSCALE)
     mask = np.where(mask > 255 * 0.5, 1, 0)
 
-    if reframe:
+    if reframed:
         # Remove rows containing all zeros
         mask = mask[~np.all(mask == 0, axis=1)]
 
@@ -71,7 +71,7 @@ def apply_frame_mask(frame: np.ndarray, type: str) -> np.ndarray:
 
     return masked_frame
 
-def get_frame_from_video(video: cv2.VideoCapture, frame: int, split: bool = True, masked: bool = False, reframe: bool = False) -> np.ndarray:
+def get_frame_from_video(video: cv2.VideoCapture, frame: int, split: bool = True, masked: bool = False, reframed: bool = False) -> np.ndarray:
     """
     Returns left and right frames at the given index from the video, optionally masked and reframed.
 
@@ -80,7 +80,7 @@ def get_frame_from_video(video: cv2.VideoCapture, frame: int, split: bool = True
         frame (int): Index of the frame to be returned.
         split (bool): Whether to return the left and right frames separately.
         masked (bool): Whether to return the masked version of the frame.
-        reframe (bool): Whether to reframe the frame.
+        reframed (bool): Whether to reframe the frame.
 
     Returns:
         left_frame (np.ndarray): Left frame at the given index, with values in [0, 255].
@@ -102,7 +102,7 @@ def get_frame_from_video(video: cv2.VideoCapture, frame: int, split: bool = True
         left_frame = apply_frame_mask(left_frame, 'left')
         right_frame = apply_frame_mask(right_frame, 'right')
 
-    if reframe:
+    if reframed:
         # Remove rows containing all zeros
         left_frame = left_frame[~np.all(left_frame == 0, axis=2).all(axis=1)]
         right_frame = right_frame[~np.all(right_frame == 0, axis=2).all(axis=1)]
@@ -112,3 +112,26 @@ def get_frame_from_video(video: cv2.VideoCapture, frame: int, split: bool = True
         right_frame = right_frame[:, ~np.all(right_frame == 0, axis=2).all(axis=0)]
 
     return left_frame.astype(np.uint8), right_frame.astype(np.uint8)
+
+def get_video_frame_iterator(video: cv2.VideoCapture, frame_step: int = 1, split: bool = True, masked: bool = False, reframed: bool = False) -> np.ndarray:
+    """
+    Returns an iterator over the frames of the video, optionally masked and reframed.
+
+    Args:
+        video (cv2.VideoCapture): VideoCapture object for the video.
+        frame_step (int): Number of frames to skip between each frame returned.
+        split (bool): Whether to return the left and right frames separately.
+        masked (bool): Whether to return the masked version of the frame.
+        reframe (bool): Whether to reframe the frame.
+
+    Returns:
+        frame_iterator (np.ndarray): Iterator over the frames of the video.
+    """
+    assert frame_step > 0, f"❌ Invalid frame step {frame_step}: must be greater than 0."
+
+    frame = 0
+    n_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    while frame < n_frames:
+        yield get_frame_from_video(video, frame, split, masked, reframed)
+
+        frame += frame_step
