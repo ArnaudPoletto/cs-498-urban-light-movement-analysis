@@ -41,6 +41,17 @@ Basic techniques like thresholding, clustering, superpixels, and edge detection 
 - [Rethinking Atrous Convolution for Semantic Image Segmentation](https://arxiv.org/abs/1706.05587)
 - [Sky pixel detection in outdoor imagery using an adaptive algorithm
 and machine learning](https://arxiv.org/abs/1910.03182)
+- [Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
+- [MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://arxiv.org/abs/1704.04861)
+- [A Hybrid Thresholding Algorithm for Cloud Detection on Ground-Based Color Images](https://journals.ametsoc.org/view/journals/atot/28/10/jtech-d-11-00009_1.xml)
+- [Semantic Understanding of Scenes through the ADE20K Dataset](https://arxiv.org/abs/1608.05442)
+- [SUN Database: Large-scale Scene Recognition from Abbey to Zoo](https://vision.princeton.edu/projects/2010/SUN/paper.pdf)
+- [The Mapillary Vistas Dataset for Semantic Understanding of Street Scenes](https://openaccess.thecvf.com/content_ICCV_2017/papers/Neuhold_The_Mapillary_Vistas_ICCV_2017_paper.pdf)
+- [The Cityscapes Dataset for Semantic Urban Scene Understanding](https://arxiv.org/abs/1604.01685)
+- [Sky segmentation in the wild: An empirical study](https://ieeexplore.ieee.org/document/7477637)
+- [Color-based Segmentation of Sky/Cloud Images
+From Ground-based Cameras](https://stefan.winkler.site/Publications/jstars2017.pdf)
+- [AdaBelief Optimizer: Adapting Stepsizes by the Belief in Observed Gradients](https://arxiv.org/abs/2010.07468)
 
 ### Week 03
 
@@ -56,6 +67,10 @@ This week, I dived into the sky/cloud segmentation process. The initial approach
 #### Challenges and Solutions
 
 While this approach was generally effective, it encountered limitations in distinguishing complex cloud formations and varied lighting conditions. In certain scenarios, the algorithm misclassified cloud features, underscoring the need for refinement. I decided to use deep learning to improve the performance of the algorithm in the next week.
+
+#### Related Papers
+
+- [SLIC Superpixels Compared to State-of-the-Art Superpixel Methods](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6205760)
 
 ### Week 04
 
