@@ -36,6 +36,12 @@ I applied Contrast Limited Adaptive Histogram Equalization (CLAHE) to enhance cl
 
 Basic techniques like thresholding, clustering, superpixels, and edge detection were limited and did not offer optimal performance for ground detection. I decided to explore deep learning approaches, which proved to be more effective in accurately identifying and isolating ground features.
 
+#### Related Papers
+
+- [Rethinking Atrous Convolution for Semantic Image Segmentation](https://arxiv.org/abs/1706.05587)
+- [Sky pixel detection in outdoor imagery using an adaptive algorithm
+and machine learning](https://arxiv.org/abs/1910.03182)
+
 ### Week 03
 
 #### Objectives
@@ -65,6 +71,12 @@ This week, I implemented a deep learning model for sky/cloud segmentation. I use
 
 Overall, the model performed well, but it was unable to accurately segment the sky in certain scenarios. This was due to the lack of sufficient training data. In the upcoming weeks, I will focus on detecting changes in light within the sky and utilize optical flow to track motion.
 
+#### Related Papers
+
+- [Automatic Cloud Detection for All-Sky Images
+Using Superpixel Segmentation](https://ieeexplore.ieee.org/document/6874559)
+- [Multi-level semantic labeling of Sky/cloud images](https://ieeexplore.ieee.org/document/7350876)
+
 ### Week 05
 
 #### Objectives
@@ -93,6 +105,10 @@ Lastly, the **Optical Flow's Farneback Algorithm** was employed to obtain optica
 #### Challenges and Solutions
 
 The computation of statistical properties between video frames at 3-second intervals presented challenges in terms of processing time and data management. The segmentation of the sky into light and dark zones was initially inconsistent, leading to unreliable data. Additional efforts and refinements are required to optimize the computational efficiency and enhance the consistency of sky segmentation if these methodologies prove to be valuable in our ongoing lighting analysis.
+
+#### Related Papers
+
+- [Detection of changes in luminance distributions](https://jov.arvojournals.org/article.aspx?articleid=2121050)
 
 ## ⌨️ Commands
 ```
