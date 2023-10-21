@@ -120,6 +120,7 @@ Lastly, the **Optical Flow's Farneback Algorithm** was employed to obtain optica
 #### Challenges and Solutions
 
 The computation of statistical properties between video frames at 3-second intervals presented challenges in terms of processing time and data management. The segmentation of the sky into light and dark zones was initially inconsistent, leading to unreliable data. Additional efforts and refinements are required to optimize the computational efficiency and enhance the consistency of sky segmentation if these methodologies prove to be valuable in our ongoing lighting analysis.
+Additionally, I applied optical flow on images that are still warped, which affects the accuracy and reliability of the data derived from these images. To address this issue, it is essential to retrieve and utilize camera intrinsic parameters. By unwarping the images, the accuracy of data obtained through the optical flow algorithm will be improved.
 
 #### Related Papers
 
