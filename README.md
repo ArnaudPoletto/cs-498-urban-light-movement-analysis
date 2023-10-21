@@ -125,9 +125,4 @@ The computation of statistical properties between video frames at 3-second inter
 
 - [Detection of changes in luminance distributions](https://jov.arvojournals.org/article.aspx?articleid=2121050)
 
-## ⌨️ Commands
-```
-pip install -e .
-```
-
 _Note: This README is a template and will be updated as the project progresses._
