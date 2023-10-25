@@ -126,4 +126,19 @@ Additionally, I applied optical flow on images that are still warped, which affe
 
 - [Detection of changes in luminance distributions](https://jov.arvojournals.org/article.aspx?articleid=2121050)
 
+### Week 06
+
+#### Objectives
+
+- [] Retrieve camera intrinsic parameters.
+- [] Implement image unwarping to rectify the images before analyzing them.
+
+
+- [?] Focus on ground.
+- [?] Integrate shadow detection to better understand lighting changes.
+- [?] Research and implement shadow detection algorithms.
+- [?] Analyze how shadows correlate with other observed lighting changes.
+- [?] Develop a real-time processing pipeline for video analysis.
+- [?] Develop a user interface to visualize the analysis results.
+
 _Note: This README is a template and will be updated as the project progresses._
