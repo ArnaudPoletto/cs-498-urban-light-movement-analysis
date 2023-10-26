@@ -53,13 +53,14 @@ def get_frame_mask(type: str, reframed: bool = False) -> np.ndarray:
 
     return mask.astype(np.uint8)
 
-def apply_frame_mask(frame: np.ndarray, type: str) -> np.ndarray:
+def apply_frame_mask(frame: np.ndarray, type: str, undistort: bool = False) -> np.ndarray:
     """
     Applies the left or right mask to the given frame.
 
     Args:
         frame (np.ndarray): Frame to be masked.
         type (str): Type of mask to be applied.
+        undistort (bool): Whether to undistort the frame.
 
     Returns:
         masked_frame (np.ndarray): Masked frame.
@@ -67,11 +68,36 @@ def apply_frame_mask(frame: np.ndarray, type: str) -> np.ndarray:
     assert type in ['left', 'right'], f"❌ Invalid mask type {type}: must be 'left' or 'right'."
 
     mask = get_frame_mask(type)
+    if undistort:
+        mask = undistort_frame(mask)
     masked_frame = frame * mask[:, :, np.newaxis]
 
     return masked_frame
 
-def get_frame_from_video(video: cv2.VideoCapture, frame: int, split: bool = True, masked: bool = False, reframed: bool = False) -> np.ndarray:
+def undistort_frame(frame):
+    H_res = 3072 # px 3072
+    W_res = 3072 # px 3072
+    H_sen = 24 # mm 24
+    W_sen = 18 # mm (36//2)
+    f = 5.2 # mm 5.2
+
+    alpha_u = f * W_res / W_sen # 887.4666666666667
+    alpha_v = f * H_res / H_sen # 665.6
+    alpha_v = 2000
+
+    K = np.array([
+        [alpha_u, 0, W_res / 2],
+        [0, alpha_v, H_res / 2],
+        [0, 0, 1]
+    ])
+    D = np.array([0.025, 0.0, 0.0, 0.0])
+
+    map1, map2 = cv2.fisheye.initUndistortRectifyMap(K, D, np.eye(3), K, (W_res, H_res), cv2.CV_16SC2)
+    undistorted_frame = cv2.remap(frame, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+
+    return undistorted_frame
+
+def get_frame_from_video(video: cv2.VideoCapture, frame: int, split: bool = True, masked: bool = False, reframed: bool = False, undistort: bool = False) -> np.ndarray:
     """
     Returns left and right frames at the given index from the video, optionally masked and reframed.
 
@@ -81,6 +107,7 @@ def get_frame_from_video(video: cv2.VideoCapture, frame: int, split: bool = True
         split (bool): Whether to return the left and right frames separately.
         masked (bool): Whether to return the masked version of the frame.
         reframed (bool): Whether to reframe the frame.
+        undistort (bool): Whether to undistort the frame.
 
     Returns:
         left_frame (np.ndarray): Left frame at the given index, with values in [0, 255].
@@ -91,16 +118,19 @@ def get_frame_from_video(video: cv2.VideoCapture, frame: int, split: bool = True
     video.set(cv2.CAP_PROP_POS_FRAMES, frame)
     _, frame = video.read()
 
-    if split:
-        left_frame = frame[:, :frame.shape[1]//2]
-        right_frame = frame[:, frame.shape[1]//2:]
-    else:
-        left_frame = frame
-        right_frame = frame
+    left_frame = frame[:, :frame.shape[1]//2]
+    right_frame = frame[:, frame.shape[1]//2:]
+    if undistort:
+        left_frame = undistort_frame(left_frame)
+        right_frame = undistort_frame(right_frame)
+
+    if not split:
+        left_frame = np.concatenate((left_frame, right_frame), axis=1)
+        right_frame = left_frame
 
     if masked:
-        left_frame = apply_frame_mask(left_frame, 'left')
-        right_frame = apply_frame_mask(right_frame, 'right')
+        left_frame = apply_frame_mask(left_frame, 'left', undistort)
+        right_frame = apply_frame_mask(right_frame, 'right', undistort)
 
     if reframed:
         # Remove rows containing all zeros
@@ -113,7 +143,7 @@ def get_frame_from_video(video: cv2.VideoCapture, frame: int, split: bool = True
 
     return left_frame.astype(np.uint8), right_frame.astype(np.uint8)
 
-def get_video_frame_iterator(video: cv2.VideoCapture, frame_step: int = 1, split: bool = True, masked: bool = False, reframed: bool = False) -> np.ndarray:
+def get_video_frame_iterator(video: cv2.VideoCapture, frame_step: int = 1, split: bool = True, masked: bool = False, reframed: bool = False, undistort: bool = False) -> np.ndarray:
     """
     Returns an iterator over the frames of the video, optionally masked and reframed.
 
@@ -123,6 +153,7 @@ def get_video_frame_iterator(video: cv2.VideoCapture, frame_step: int = 1, split
         split (bool): Whether to return the left and right frames separately.
         masked (bool): Whether to return the masked version of the frame.
         reframe (bool): Whether to reframe the frame.
+        undistort (bool): Whether to undistort the frame.
 
     Returns:
         frame_iterator (np.ndarray): Iterator over the frames of the video.
@@ -132,6 +163,6 @@ def get_video_frame_iterator(video: cv2.VideoCapture, frame_step: int = 1, split
     frame = 0
     n_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
     while frame < n_frames:
-        yield get_frame_from_video(video, frame, split, masked, reframed)
+        yield get_frame_from_video(video, frame, split, masked, reframed, undistort)
 
         frame += frame_step
