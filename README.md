@@ -130,9 +130,41 @@ Additionally, I applied optical flow on images that are still warped, which affe
 
 #### Objectives
 
+- [x] Extend the global lighting analysis across various scenes.
 - [] Retrieve camera intrinsic parameters.
-- [] Implement image unwarping to rectify the images before analyzing them.
+- [x] Implement image unwarping to rectify the images before analyzing them.
+- [x] Incorporate the RAFT deep learning-based optical flow algorithm.
 
+#### Progress
+
+The **Global Lighting Evaluation** was expanded this week, incorporating both boxplot and violin plot methodologies to discern distribution disparities across different scenes. The **RAFT** deep learning optical flow algorithm was introduced to the analysis, aiming to offer a more nuanced understanding of scene dynamics. There was a marked difference observed in the optical flow magnitudes between clear sky and overcast images when using RAFT. The clearer skies exhibited more diverse optical flow magnitudes, possibly due to a scarcity of features in overcast images to anchor the flow.
+
+**Image unwarping** was also tackled, aimed at ameliorating angle accuracy in the context of optical flow. This effort was primarily manual, given the absence of the camera's intrinsic parameters.
+
+#### Challenges and Solutions
+
+A comparison between the Farneback and RAFT algorithms unveiled distinct differences. While Farneback appeared to hone in on cloud peripheries, RAFT seemed to center its attention on the clouds themselves. However, in certain scenes, RAFT's outputs did not seem to align with the actual L1 differences between frames. This suggests that RAFT might be zeroing in on distinct scene elements than initially anticipated.
+
+The manual unwarping process, while helpful, wasn't flawless. To further enhance the rectification process, considering alternative projections, such as equirectangular, might prove beneficial. As we move forward, it would be prudent to conduct a deeper dive to determine whether RAFT is the optimal metric for lighting change detection or if the Farneback method offers superior insights.
+
+### Week 07
+
+#### Objectives
+
+- [] Check segmentation models on Dong's HDR video scenes.
+- [] Extend last week's optical flow analysis using Farneback's algorithm.
+- [] Verify optical flow with bidirectional comparison and bilinear sampling.
+- [] Use different projections to keep distances consistent instead of angles.
+
+#### Progress
+
+TODO
+
+#### Challenges and Solutions
+
+TODO
+
+### Other Tasks
 
 - [?] Focus on ground.
 - [?] Integrate shadow detection to better understand lighting changes.
