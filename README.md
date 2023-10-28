@@ -131,7 +131,7 @@ Additionally, I applied optical flow on images that are still warped, which affe
 #### Objectives
 
 - [x] Extend the global lighting analysis across various scenes.
-- [] Retrieve camera intrinsic parameters.
+- [ ] Retrieve camera intrinsic parameters.
 - [x] Implement image unwarping to rectify the images before analyzing them.
 - [x] Incorporate the RAFT deep learning-based optical flow algorithm.
 
@@ -151,10 +151,10 @@ The manual unwarping process, while helpful, wasn't flawless. To further enhance
 
 #### Objectives
 
-- [] Check segmentation models on Dong's HDR video scenes.
-- [] Extend last week's optical flow analysis using Farneback's algorithm.
-- [] Verify optical flow with bidirectional comparison and bilinear sampling.
-- [] Use different projections to keep distances consistent instead of angles.
+- [ ] Check segmentation models on Dong's HDR video scenes.
+- [ ] Extend last week's optical flow analysis using Farneback's algorithm.
+- [ ] Verify optical flow with bidirectional comparison and bilinear sampling.
+- [ ] Use different projections to keep distances consistent instead of angles.
 
 #### Progress
 
