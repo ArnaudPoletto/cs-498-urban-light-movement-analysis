@@ -118,15 +118,16 @@ def get_frame_from_video(video: cv2.VideoCapture, frame: int, split: bool = True
     video.set(cv2.CAP_PROP_POS_FRAMES, frame)
     _, frame = video.read()
 
-    left_frame = frame[:, :frame.shape[1]//2]
-    right_frame = frame[:, frame.shape[1]//2:]
+    if split:
+        left_frame = frame[:, :frame.shape[1]//2]
+        right_frame = frame[:, frame.shape[1]//2:]
+    else:
+        left_frame = frame
+        right_frame = frame
+
     if undistort:
         left_frame = undistort_frame(left_frame)
         right_frame = undistort_frame(right_frame)
-
-    if not split:
-        left_frame = np.concatenate((left_frame, right_frame), axis=1)
-        right_frame = left_frame
 
     if masked:
         left_frame = apply_frame_mask(left_frame, 'left', undistort)

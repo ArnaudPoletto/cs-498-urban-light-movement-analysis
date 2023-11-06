@@ -151,18 +151,22 @@ The manual unwarping process, while helpful, wasn't flawless. To further enhance
 
 #### Objectives
 
-- [ ] Check segmentation models on Dong's HDR video scenes.
-- [ ] Extend last week's optical flow analysis using Farneback's algorithm.
+- [x] Check segmentation models on Dong's HDR video scenes.
+- [x] Extend last week's optical flow analysis using Farneback's algorithm.
 - [ ] Verify optical flow with bidirectional comparison and bilinear sampling.
 - [ ] Use different projections to keep distances consistent instead of angles.
 
 #### Progress
 
-TODO
+This week's progression in analyzing lighting variations in video scenes is on course, particularly with a focus on HDR (High Dynamic Range) scenes. Initial steps have been taken to apply segmentation models on Dong's HDR video sequences. These sequences pose a unique challenge for standard segmentation models, which are typically trained on LDR (Low Dynamic Range) images.
+
+Additionally, I've extended the optical flow analysis from last week by fine-tuning the parameters of Farneback's algorithm to better capture the dynamic aspects of the sky. This fine-tuning is showing promising results, particularly in distinguishing between clear and overcast scenes based on the observed optical flow patterns.
 
 #### Challenges and Solutions
 
-TODO
+One of the challenges faced this week was the application of segmentation models to HDR videos. The models, which are trained on LDR imagery, struggle with the high dynamic range of the HDR videos. To address this, a possible solution is the implementation of tone mapping techniques that can convert HDR scenes to LDR to better fit the model's training data while preserving relevant scene details for accurate segmentation.
+
+Tuning Farneback's algorithm parameters has been a critical task. The settings have been adjusted to improve the detection of optical flow in sky regions, revealing a correlation with L1 differences. This indicates that Farneback's optical flow, with the right parameters, can be a reliable metric for distinguishing scene types or cloud coverage.
 
 ### Other Tasks
 

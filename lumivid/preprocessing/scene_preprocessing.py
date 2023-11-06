@@ -128,7 +128,7 @@ def process_frames(
         left_frame, _ = frame[:, :frame.shape[1]//2], frame[:, frame.shape[1]//2:]
         if mask_reframe:
             left_frame = mask_reframe_frame(left_frame, 'left')
-        mask = get_frame_mask('left', reframe=mask_reframe)
+        mask = get_frame_mask('left', reframed=mask_reframe)
         preprocessed_frame = preprocess_frame(left_frame, mask=mask)
 
         # Apply temporal averaging
