@@ -168,13 +168,51 @@ One of the challenges faced this week was the application of segmentation models
 
 Tuning Farneback's algorithm parameters has been a critical task. The settings have been adjusted to improve the detection of optical flow in sky regions, revealing a correlation with L1 differences. This indicates that Farneback's optical flow, with the right parameters, can be a reliable metric for distinguishing scene types or cloud coverage.
 
-### Other Tasks
+### Week 08
 
-- [?] Focus on ground.
-- [?] Integrate shadow detection to better understand lighting changes.
-- [?] Research and implement shadow detection algorithms.
-- [?] Analyze how shadows correlate with other observed lighting changes.
-- [?] Develop a real-time processing pipeline for video analysis.
-- [?] Develop a user interface to visualize the analysis results.
+#### Objectives
+
+- [x] Integrate segmentation and optical flow models for enhanced analysis.
+
+#### Progress
+
+Implemented a hybrid approach, utilizing the DeepLabV3 model for sky/ground separation, and the Pretrained DeepLabV3 with ResNet101 backbone, recalibrated to identify three primary classes: person, vehicle, and background. This model, originally designed for 21 classes, now offers more focused segmentation. Additionally, the pretrained RAFT model was applied for optical flow estimation, allowing for distinct optical flow magnitudes for each class and enabling a deeper understanding of scene dynamics.
+
+#### Challenges and Solutions
+
+**Key Issues to Address:**
+1. **Segmentation Accuracy:** The effectiveness of object segmentation is currently influencing the overall results. Improvements in this area could lead to more accurate analyses.
+2. **Temporal Consistency:** There is a lack of temporal coherence in the segmentation and optical flow estimates across consecutive frames.
+3. **Object Dominance:** Large or nearby objects are disproportionately impacting the outcomes, skewing the analysis.
+4. **Vegetation Classification:** The absence of 'vegetation' as a class in the pretrained model leads to its categorization as 'background,' which may not always be appropriate.
+
+### Week 09
+
+#### Objectives
+
+- [x] Implement Grounded-Segment-Anything (GSAM) for semantic segmentation.
+
+#### Progress
+
+GSAM, capable of segmenting classes based on textual descriptions in a zero-shot manner, was employed to circumvent the need for costly pretraining for new classes, such as vegetation. Initial results indicate promising performance, though some inaccuracies in class identification or object omission were observed.
+
+#### Challenges and Solutions
+
+The primary challenge lies in the model's size, making it cumbersome for video application. Recent developments in light segment models layered on the grounding dino model offer a potential speed enhancement, though implementation on video remains complex.
+
+### Week 10
+
+#### Objectives
+
+- [x] Enhance visualization for GSAM model outcomes.
+- [ ] Develop a new graph with improved cloud segmentation from prior work.
+
+#### Progress
+
+Improvements in the GSAM model visualizations were achieved, particularly with the addition of the mean number of objects per frame in videos for each class (person, vegetation, vehicle).
+
+#### Challenges and Solutions
+
+No significant challenges were reported in this phase.
 
 _Note: This README is a template and will be updated as the project progresses._

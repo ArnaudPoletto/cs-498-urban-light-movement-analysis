@@ -4,6 +4,7 @@ data/sky_ground_segmentation/*
 data/sky_cloud_segmentation/*
 data/BACKUP/*
 data/dong/*
+data/gsam/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
