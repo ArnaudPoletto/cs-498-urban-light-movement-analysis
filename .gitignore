@@ -5,6 +5,7 @@ data/sky_cloud_segmentation/*
 data/BACKUP/*
 data/dong/*
 data/gsam/*
+data/cloud_percentage.pkl
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

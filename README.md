@@ -205,14 +205,16 @@ The primary challenge lies in the model's size, making it cumbersome for video a
 #### Objectives
 
 - [x] Enhance visualization for GSAM model outcomes.
-- [ ] Develop a new graph with improved cloud segmentation from prior work.
+- [x] Develop a new graph with improved cloud segmentation from prior work.
 
 #### Progress
 
-Improvements in the GSAM model visualizations were achieved, particularly with the addition of the mean number of objects per frame in videos for each class (person, vegetation, vehicle).
+Improvements in the GSAM model visualizations were achieved, particularly with the addition of the mean number of objects per frame in videos for each class (person, vegetation, vehicle). Using the previous models for cloud segmentation, a new graph was developed to better capture the cloud coverage in Dong's HDR videos.
 
 #### Challenges and Solutions
 
-No significant challenges were reported in this phase.
+During the course of this project, we employed three distinct methods for cloud segmentation. Firstly, we fine-tuned the DeepLabV3 model on a robust dataset tailored for segmentation tasks. Secondly, we implemented a supervised approach that leverages superpixels and a dedicated feature space to discern sky from clouds. Lastly, we utilized a graph-cut algorithm that processes High Dynamic Range (HDR) values extracted from Dong's HDR video footage.
+
+Each method presents unique benefits and challenges. The DeepLabV3 model excels in handling complex scenarios, such as images containing direct sunlight or clear skies devoid of clouds. For such demanding cases, its advanced feature extraction capabilities prove invaluable. Conversely, in situations where the cloud and sky present a stark contrast, resulting in a bimodal distribution of pixel values, the graph-cut algorithm is preferred. It offers enhanced precision, delivering more nuanced segmentation results for simpler images.
 
 _Note: This README is a template and will be updated as the project progresses._
