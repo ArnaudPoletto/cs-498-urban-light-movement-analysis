@@ -279,9 +279,7 @@ def _process_video(
 
 
 if __name__ == "__main__":
-    # Transform into parsed arguments
-    import argparse
-
+    # Get number of processes and whether to mask and reframe frames
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--num_processes",

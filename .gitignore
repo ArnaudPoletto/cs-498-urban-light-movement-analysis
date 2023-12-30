@@ -1,7 +1,5 @@
 data/ldr/
-data/sky_cloud_segmentation/*
 data/sky_ground_segmentation/*
-!data/sky_cloud_segmentation/models/
 !data/sky_ground_segmentation/models/
 !data/gld_lcim/
 !data/hdr/
