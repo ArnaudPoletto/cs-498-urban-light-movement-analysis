@@ -1,220 +1,405 @@
-# 🌞 Analyzing the Changes in Captured Daylight in Real-Time Videos
+# Daylight Variability and Scene Dynamics: Analysing Light and Movement in Urban Spaces
 
-## 📋 Project Overview
+## Introduction
 
-This project aims to develop new methods for analyzing changes in daylight conditions captured in real-time videos. We focus on detecting, extracting, and tracking temporal changes, motion, and luminous changes in video footage.
+This GitHub repository is dedicated to the research project "Daylight Dynamics: A New Approach to Analysing Luminous Variability". It provides a centralised platform for accessing all materials related to our study on the temporal dynamics of natural light and its implications in daylighting and built environments.
 
-## 📖 Log Book
+## Repository Contents
 
-### Week 01
+* **LDR Image Processing**
+    * Code: [📁 processing](/src/processing/)
+* **Ground Segmentation**
+    * Trained weights: [📄 DeepLabV3 with MobileNetV3Large](/data/sky_ground_segmentation/models/deeplabv3mobilenetv3large_ranger_pretrained.pth) [📄 DeepLabV3 with ResNet101](/data/sky_ground_segmentation/models/deeplabv3resnet101_ranger_pretrained.pth)
+    * Training code: [📁 sky_ground_segmentation](/src/sky_ground_segmentation/)
+* **Cloud Segmentation**
+    * Trained weights: [📄 DeepLabV3 with ResNet101](/data/sky_cloud_segmentation/models/deeplabv3resnet101_ranger_pretrained.pth)
+    * Training code: [📁 sky_cloud_segmentation_dl](/src/sky_cloud_segmentation_dl/)
+* **Cloud Coverage Estimation**
+    * Code: [📁 cloud_coverage](/src/cloud_coverage/)
+    * Images: [📁 cloud_coverage](/generated/cloud_coverage/)
+* **Lighting Analysis**
+    * Code: [📁 gld_lcim](/src/gld_lcim/)
+    * Images: [📁 gld_lcim](/generated/gld_lcim/)
+* **Motion Analysis**
+    * Code: [📁 motion](/src/motion/)
+    * Images: [📁 motion](/generated/motion/)
 
-#### Objectives
+## Installation Guide
 
-- [x] Create a GitHub repository for the project.
-- [x] Begin the project with an introductory overview.
+This section guides you through the process of setting up the necessary environment and software to reproduce the results of our study.
 
-#### Progress
+### Prerequisites
 
-I created a GitHub repository for the project and I read some papers about how to segment sky images using basic image processing techniques.
+Before beginning, ensure you have the following installed:
 
-#### Challenges and Solutions
+* Python (version 3.11.5)
+* Conda (version 23.7.4)
+* Git (for cloning the repository)
 
-I recognized the need to accurately detect and exclude the ground before classifying the sky to ensure more precise analysis. My upcoming tasks will focus on video preprocessing and efficient ground detection.
+### Cloning the Repository
 
-### Week 02
+Clone the repository to your local machine using Git:
 
-#### Objectives
+```bash
+git clone https://github.com/pqhqhyvn/DaylightDynamics
+cd DaylightDynamics
+``` 
 
-- [x] Work on video preprocessing.
-- [x] Work on ground detection.
+### Environment Setup
 
-#### Progress
+It is recommended to create a new Conda environment for this project to manage dependencies effectively. Use the provided [environment.yml](/environment.yml) file to create the environment:
 
-I applied Contrast Limited Adaptive Histogram Equalization (CLAHE) to enhance cloud features but noted the introduction of noise. I mitigated this with Bilateral Filtering and temporal averaging. For ground detection, traditional image processing techniques were insufficient, so I implemented a deep learning model which proved more effective.
+```bash
+conda env create -f environment.yml
+conda activate dd
+```
 
-#### Challenges and Solutions
+### Installing Dependencies
 
-Basic techniques like thresholding, clustering, superpixels, and edge detection were limited and did not offer optimal performance for ground detection. I decided to explore deep learning approaches, which proved to be more effective in accurately identifying and isolating ground features.
+Install all required packages using the provided [requirements.txt](/requirements.txt) file:
 
-#### Related Papers
+```bash
+conda install --file requirements.txt
+```
 
-- [Rethinking Atrous Convolution for Semantic Image Segmentation](https://arxiv.org/abs/1706.05587)
-- [Sky pixel detection in outdoor imagery using an adaptive algorithm
-and machine learning](https://arxiv.org/abs/1910.03182)
-- [Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
-- [MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://arxiv.org/abs/1704.04861)
-- [A Hybrid Thresholding Algorithm for Cloud Detection on Ground-Based Color Images](https://journals.ametsoc.org/view/journals/atot/28/10/jtech-d-11-00009_1.xml)
-- [Semantic Understanding of Scenes through the ADE20K Dataset](https://arxiv.org/abs/1608.05442)
-- [SUN Database: Large-scale Scene Recognition from Abbey to Zoo](https://vision.princeton.edu/projects/2010/SUN/paper.pdf)
-- [The Mapillary Vistas Dataset for Semantic Understanding of Street Scenes](https://openaccess.thecvf.com/content_ICCV_2017/papers/Neuhold_The_Mapillary_Vistas_ICCV_2017_paper.pdf)
-- [The Cityscapes Dataset for Semantic Urban Scene Understanding](https://arxiv.org/abs/1604.01685)
-- [Sky segmentation in the wild: An empirical study](https://ieeexplore.ieee.org/document/7477637)
-- [Color-based Segmentation of Sky/Cloud Images
-From Ground-based Cameras](https://stefan.winkler.site/Publications/jstars2017.pdf)
-- [AdaBelief Optimizer: Adapting Stepsizes by the Belief in Observed Gradients](https://arxiv.org/abs/2010.07468)
+### Running the Code
 
-### Week 03
+Follow the README instructions for each part of the project to reproduce the results.
 
-#### Objectives
+## 1. LDR Image Processing
 
-- [x] Create segmentation dataset for sky/cloud segmentation.
-- [x] Work on sky/cloud segmentation.
+### 1.1 Description
 
-#### Progress
+Our image processing approach involves standardising each scene for consistent analysis:
 
-This week, I dived into the sky/cloud segmentation process. The initial approach involved utilizing superpixels and a decision tree classifier for segmenting and classifying various sections of the sky. Each superpixel in an image was analyzed based on its descriptor vector.
+* Bilateral filtering with a 13x13 pixel kernel is applied to reduce noise while retaining key edge details.
+* Contrast Limited Adaptive Histogram Equalisation (CLAHE) enhances contrast and visibility in varied lighting.
+* To mitigate flicker noise, we employ a moving average technique over three consecutive frames for each frame in the sequence.
 
-#### Challenges and Solutions
+### 1.2 Reproducing the Results
 
-While this approach was generally effective, it encountered limitations in distinguishing complex cloud formations and varied lighting conditions. In certain scenarios, the algorithm misclassified cloud features, underscoring the need for refinement. I decided to use deep learning to improve the performance of the algorithm in the next week.
+To reproduce the results, follow these steps:
 
-#### Related Papers
+1. Download the raw videos used in the study and place them in the [data/ldr/raw](/data/ldr/raw/) directory in the following structure:
+    ```bash
+    data
+    ├── ldr
+    │   ├── raw
+    │   │   ├ P1SceneXX.mp4
+    │   │   ├ P2ClearXX.mp4
+    │   │   ├ P2OvercastXX.mp4
+    └   └   └ P3SceneXX.mp4
+    ```
+
+
+2. Go to the [src/processing](/src/processing/) directory:
+    ```bash
+    cd src/processing/  # On Windows use `cd src\processing\`
+    ```
+
+3. Run the following command:
+    ```bash
+    python processing.py --num_processes <num_processes> --mask_reframe <mask_reframe>
+    ```
+    Where:
+    * `<num_processes>` is the number of processes to use for parallel processing. If not specified, the default value is `1`.
+    * `<mask_reframe>` whether to reframe the video or not. If not specified, the default value is `False`.
+
+    Processed videos will be saved in the [data/ldr/processed](/data/ldr/processed/) or [data/ldr/processed_reframed](/data/ldr/processed_reframed/) directory, depending on the processing method selected.
+    
+
+## 2. Ground Segmentation
+
+### 2.1. Description
+
+In our analysis of daylight dynamics in urban settings, a key task involves segmenting the sky from the ground in urban images. This segmentation is crucial as a foundational step for our subsequent analyses and interpretations within these environments. We employ the DeepLabV3 model, specifically chosen for its proficiency in handling such complex segmentation tasks in diverse urban landscapes.
+
+The decision to use DeepLabV3 is supported by its foundational paper [1], which showcases its superior capabilities in urban outdoor scenes. Additionally, another paper [2] illustrates its use in machine vision for off-road vehicles, where it managed complex outdoor scene segmentation, a challenge akin to our task in urban landscapes. This similarity in application contexts highlights DeepLabV3 as an ideal model for our project's specific needs in environmental segmentation.
+
+Here are examples of training and validation samples from our custom dataset ([see this notebook](/notebooks/sky_ground_segmentation.ipynb)):
+
+<p float="left">
+  <img src="./generated/sky_ground_segmentation/ground_segmentation_dataset_training_sample.png" width="49%" />
+  <img src="./generated/sky_ground_segmentation/ground_segmentation_dataset_validation_sample.png" width="49%" />
+</p>
+
+### 2.2. Trained Weights
+
+Weights for the DeepLabV3 model with MobileNetV3Large backbone can be found [here](/data/sky_ground_segmentation/models/deeplabv3mobilenetv3large_ranger_pretrained.pth). Alternatively, a similar model with ResNet101 backbone can be found [here](/data/sky_ground_segmentation/models/deeplabv3resnet101_ranger_pretrained.pth).
+
+### 2.3. Errors and Limitations
+
+The model may encounter errors when distinguishing between the sky and the ground in certain situations. These errors are often related to reflections of the sky on surfaces like buildings and windows, as well as small details such as poles, wires, cranes, or road signs. It's important to acknowledge these limitations when using the segmentation results in outdoor environments.
+
+### 2.4. Reproducing the Results
+
+To reproduce the results, follow these steps:
+
+1. Download the necessary datasets and place them in the [data/sky_ground_segmentation](/data/sky_ground_segmentation/) directory. They contain images and binary masks for the following datasets:
+    * [ADE20K Outdoors](https://www.kaggle.com/datasets/residentmario/ade20k-outdoors): A subset of the [ADE20K](https://groups.csail.mit.edu/vision/datasets/ADE20K/) [5] dataset, containing images of outdoor scenes.
+    * [Cityscapes](https://www.cityscapes-dataset.com/) [6]: A dataset of urban street scenes.
+    * [Mapillary Vistas](https://www.mapillary.com/dataset/vistas) [7]: A dataset of diverse street scenes.
+    * [Sky Finder](https://mvrl.cse.wustl.edu/datasets/skyfinder/) [8]: A dataset of outdoor scenes with sky and ground segmentation.
+    * [Sun2012](https://groups.csail.mit.edu/vision/SUN/hierarchy.html) [9]: A dataset of various scenes, which have been filtered manually to include outdoor images only.
+    * [Swimseg](https://paperswithcode.com/dataset/swimseg) [10]: A dataset of sky patches.
+
+    Processing steps have been applied to guarantee that the masks in the dataset are binary, effectively distinguishing between sky and ground in each image. The datasets are organised in the following structure:
+
+    ```bash
+    data
+    ├── sky_ground_segmentation
+    │   ├── ade20k_outdoors
+    │   │   ├── images
+    │   │   │   ├ ADE_train_XXXXXXXX.jpg
+    │   │   │   └ ...
+    │   │   └── masks
+    │   │       ├ ADE_train_XXXXXXXX.png
+    │   │       └ ...
+    │   ├── cityscapes
+    │   │   ├── images
+    │   │   │   ├ X.png
+    │   │   │   └ ...
+    │   │   └── masks
+    │   │       ├ X.png
+    │   │       └ ...
+    │   ├── mapillary_vistas
+    │   │   ├── images
+    │   │   │   ├ X.jpg
+    │   │   │   └ ...
+    │   │   └── masks
+    │   │       ├ X.png
+    │   │       └ ...
+    │   ├── sky_finder
+    │   │   ├── images
+    │   │   │   ├── X
+    │   │   │   │   ├ X.jpg
+    │   │   │   │   └ ...
+    │   │   │   ├── ...
+    │   │   │   └ masks
+    │   │   │       ├ X.png
+    │   │   │       └ ...
+    │   ├── sun2012
+    │   │   ├── images
+    │   │   │   ├ X.jpg
+    │   │   │   └ ...
+    │   │   └── masks
+    │   │       ├ X.png
+    │   │       └ ...
+    │   ├── swimseg
+    │   │   ├── images
+    │   │   │   ├ XXXX.jpg
+    │   │   │   └ ...
+    │   │   └── masks
+    └   └       └ mask.png
+    ```
 
-- [SLIC Superpixels Compared to State-of-the-Art Superpixel Methods](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6205760)
+2. Go to the [sky_ground_segmentation](/src/sky_ground_segmentation/) directory:
 
-### Week 04
+    ```bash
+    cd src/sky_ground_segmentation/   # On Windows use `cd src\sky_ground_segmentation\`
+    ```
 
-#### Objectives
+3. Run the following command:
 
-- [x] Work on sky/cloud segmentation using deep learning.
+    ```bash
+    python train.py --model_type <model_type>
+    ```
+    Where `<model_type>` is the type of the model to train. It can be either `deeplabv3mobilenetv3large` or `deeplabv3resnet101`. If not specified, the default value is `deeplabv3mobilenetv3large`.
 
-#### Progress
+## 3. Cloud Segmentation
 
-This week, I implemented a deep learning model for sky/cloud segmentation. I used the DeepLabV3 architecture with a ResNet-101 backbone. The model was trained on the previously made custom dataset. The model was able to accurately segment the sky and clouds in the test images.
+### 3.1. Description
 
-#### Challenges and Solutions
+Our task involves estimating cloud coverage using DeepLabV3 for cloud segmentation. We trained the model on a custom-labeled dataset sourced from Sky Finder [3], which encompasses a wide range of landscape images featuring diverse sky conditions, various weather types, and different times of the day. This dataset features labels for four distinct classes: 
+* Ground: already provided by the Sky Finder dataset.
+* Sky: representing clear blue sky.
+* Light clouds: characterising clouds with light passing through them, often veil-thin clouds.
+* Thick clouds: representing darker clouds that typically do not allow light to pass through.
 
-Overall, the model performed well, but it was unable to accurately segment the sky in certain scenarios. This was due to the lack of sufficient training data. In the upcoming weeks, I will focus on detecting changes in light within the sky and utilize optical flow to track motion.
+Traditional cloud segmentation methods, like those in [4], typically utilise spectral analysis on RGB images to differentiate between sky and cloud pixels. However, these methods have limitations in handling varied sky conditions, and may struggle with accurate classifications under direct sunlight, atmospheric pollution, or overexposure effects. These challenges underscore the necessity for more sophisticated techniques such as DeepLabV3, which can more effectively adapt to and accurately segment in these complex environmental scenarios.
 
-#### Related Papers
+Here are examples of training and validation samples from our custom dataset ([see this notebook](/notebooks/sky_cloud_segmentation.ipynb)):
 
-- [Automatic Cloud Detection for All-Sky Images
-Using Superpixel Segmentation](https://ieeexplore.ieee.org/document/6874559)
-- [Multi-level semantic labeling of Sky/cloud images](https://ieeexplore.ieee.org/document/7350876)
+<p float="left">
+  <img src="./generated/sky_cloud_segmentation/cloud_segmentation_dataset_training_sample.png" width="49%" />
+  <img src="./generated/sky_cloud_segmentation/cloud_segmentation_dataset_validation_sample.png" width="49%" /> 
+</p>
 
-### Week 05
 
-#### Objectives
+### 3.2. Trained Weights
 
-- [x] Work on lighting analysis from consecutive video frames.
+Weights for the DeepLabV3 with ResNet101 backbone can be found [here](/data/sky_cloud_segmentation/models/deeplabv3resnet101_ranger_pretrained.pth)
 
-#### Progress
+### 3.3. Errors and Limitations
 
-This week focused heavily on conducting an in-depth analysis of lighting variations captured in consecutive video frames. The primary objective was to develop a robust methodology to quantitatively measure and characterize these lighting changes, enabling the identification and analysis of patterns and anomalies.
+While we have endeavored to minimise errors, the model may occasionally misclassify overexposed clear sky as clouds. It's worth noting that our analysis does not distinguish between thin and thick clouds. This means that the model does not differentiate between varying cloud density, and these differences can have varying impacts on sky luminosity. As a result, the model may not provide precise insights into luminance levels on its own under these varying cloud conditions.
 
-**Global Lighting Evaluation** was conducted, utilizing several statistical evaluations. By computing the properties between video frames at 3-second intervals, I was able to observe both abrupt and gradual changes in lighting. Four methods were employed:
+### 3.4. Reproducing the Results
 
-- **L1 Difference**: Measuring the absolute differences in pixel values between consecutive frames helped identify abrupt changes in lighting.
-- **Mean Value Difference**: This metric was instrumental in tracking gradual changes in lighting by computing the average pixel value differences between frames.
-- **Brightness Offset Detection**: Utilized histogram peak detection to identify shifts in the overall brightness of the scene.
-- **Earth Mover’s Distance**: This method was used to capture the dissimilarity between two sequential frame histograms, offering insights into the global changes in brightness and color distribution.
+To reproduce the results, follow these steps:
 
-The **Dual-Zone Lighting Evaluation** was another focal point. I applied Otsu’s method on the L channel from LAB to segment the sky into light and dark zones. This segmentation was conducted at different granularities, including superpixel and pixel levels. Four statistical evaluations were applied:
-- **Percentage of Light Pixels**: This quantified the proportion of lighter pixels in the frames, offering insights into the overall brightness.
-- **Signed Difference in Percentage of Light Pixels**: This helped in identifying the variations in the proportion of light pixels between consecutive frames.
-- **L1 Difference between Lighting Masks**: This measurement offered insights into the abrupt changes in lighting conditions.
-- **Mean Value Difference for Light/Dark Areas**: This metric aided in assessing the gradual variations in both light and dark areas.
+1. Go to the [sky_cloud_segmentation_dl](/src/sky_cloud_segmentation_dl/) directory:
 
-Lastly, the **Optical Flow's Farneback Algorithm** was employed to obtain optical flow vectors from consecutive frames using the L channel of the LAB color space. This allowed for a detailed analysis of the movement and changes in lighting, contributing to a comprehensive understanding of the dynamic lighting conditions.
+    ```bash
+    cd src/sky_cloud_segmentation_dl/  # On Windows use `cd src\sky_cloud_segmentation_dl\`
+    ```
 
-#### Challenges and Solutions
+2. Run the following command:
 
-The computation of statistical properties between video frames at 3-second intervals presented challenges in terms of processing time and data management. The segmentation of the sky into light and dark zones was initially inconsistent, leading to unreliable data. Additional efforts and refinements are required to optimize the computational efficiency and enhance the consistency of sky segmentation if these methodologies prove to be valuable in our ongoing lighting analysis.
-Additionally, I applied optical flow on images that are still warped, which affects the accuracy and reliability of the data derived from these images. To address this issue, it is essential to retrieve and utilize camera intrinsic parameters. By unwarping the images, the accuracy of data obtained through the optical flow algorithm will be improved.
+    ```bash
+    python train.py
+    ```
 
-#### Related Papers
+## 4. Cloud Coverage Estimation
 
-- [Detection of changes in luminance distributions](https://jov.arvojournals.org/article.aspx?articleid=2121050)
+### 4.1. Description
 
-### Week 06
+We employ the [cloud segmentation](#2-cloud-segmentation) model to estimate cloud coverage in both Low Dynamic Range (LDR) and High Dynamic Range (HDR) scenes. For HDR scenes, an essential preprocessing step is tone-mapping, which adjusts the scenes to a standard dynamic range suitable for analysis. The model processes these scenes to generate a segmentation mask, differentiating between sky and clouds. This mask is then utilised to accurately estimate cloud coverage, providing critical data for analysing the impact of clouds on urban daylight conditions.
 
-#### Objectives
+The results of this analysis on HDR images are shown below:
 
-- [x] Extend the global lighting analysis across various scenes.
-- [ ] Retrieve camera intrinsic parameters.
-- [x] Implement image unwarping to rectify the images before analyzing them.
-- [x] Incorporate the RAFT deep learning-based optical flow algorithm.
+<img src="./generated/cloud_coverage/hdr_cloud_percentage_figure.png"/>
 
-#### Progress
+The results of this analysis on LDR videos are shown below:
 
-The **Global Lighting Evaluation** was expanded this week, incorporating both boxplot and violin plot methodologies to discern distribution disparities across different scenes. The **RAFT** deep learning optical flow algorithm was introduced to the analysis, aiming to offer a more nuanced understanding of scene dynamics. There was a marked difference observed in the optical flow magnitudes between clear sky and overcast images when using RAFT. The clearer skies exhibited more diverse optical flow magnitudes, possibly due to a scarcity of features in overcast images to anchor the flow.
+<img src="./generated/cloud_coverage/ldr_cloud_percentage_figure.png"/>
 
-**Image unwarping** was also tackled, aimed at ameliorating angle accuracy in the context of optical flow. This effort was primarily manual, given the absence of the camera's intrinsic parameters.
+### 4.2. Reproducing the Results
 
-#### Challenges and Solutions
+To reproduce the results, follow these steps:
 
-A comparison between the Farneback and RAFT algorithms unveiled distinct differences. While Farneback appeared to hone in on cloud peripheries, RAFT seemed to center its attention on the clouds themselves. However, in certain scenes, RAFT's outputs did not seem to align with the actual L1 differences between frames. This suggests that RAFT might be zeroing in on distinct scene elements than initially anticipated.
+1. If you want to process LDR videos, follow the instructions in the [LDR Image Processing](#1-ldr-image-processing) section. Otherwise, if you want to process HDR images, skip this step.
 
-The manual unwarping process, while helpful, wasn't flawless. To further enhance the rectification process, considering alternative projections, such as equirectangular, might prove beneficial. As we move forward, it would be prudent to conduct a deeper dive to determine whether RAFT is the optimal metric for lighting change detection or if the Farneback method offers superior insights.
+3. Go to the [cloud_coverage](/src/cloud_coverage/) directory:
 
-### Week 07
+    ```bash
+    cd src/cloud_coverage/ # On Windows use `cd src\cloud_coverage\`
+    ```
 
-#### Objectives
+4. Run the following command:
 
-- [x] Check segmentation models on Dong's HDR video scenes.
-- [x] Extend last week's optical flow analysis using Farneback's algorithm.
-- [ ] Verify optical flow with bidirectional comparison and bilinear sampling.
-- [ ] Use different projections to keep distances consistent instead of angles.
+    ```bash
+    python cloud_coverage.py
+    ```
+    Generated images will be saved in the [cloud_coverage](/generated/cloud_coverage/) directory.
 
-#### Progress
+## 5. Lighting Analysis
 
-This week's progression in analyzing lighting variations in video scenes is on course, particularly with a focus on HDR (High Dynamic Range) scenes. Initial steps have been taken to apply segmentation models on Dong's HDR video sequences. These sequences pose a unique challenge for standard segmentation models, which are typically trained on LDR (Low Dynamic Range) images.
+### 5.1. Description
 
-Additionally, I've extended the optical flow analysis from last week by fine-tuning the parameters of Farneback's algorithm to better capture the dynamic aspects of the sky. This fine-tuning is showing promising results, particularly in distinguishing between clear and overcast scenes based on the observed optical flow patterns.
+In this section of the study, we delve into the intricacies of Low Dynamic Range (LDR) imaging to analyse global lighting distribution, luminous change intensity, and magnitude across various scenes. Key aspects of our analysis include assessing the mean and variance of brightness in LDR footage, exploring the changes in global brightness across different scenes, and understanding the interplay between cloud movements, light changes, and scene dynamics.
 
-#### Challenges and Solutions
+Each scene in our study is subject to a detailed evaluation, exemplified by the plot generated for Scene 1. This plot, as illustrated below, is a result of image processing techniques applied to LDR footage:
 
-One of the challenges faced this week was the application of segmentation models to HDR videos. The models, which are trained on LDR imagery, struggle with the high dynamic range of the HDR videos. To address this, a possible solution is the implementation of tone mapping techniques that can convert HDR scenes to LDR to better fit the model's training data while preserving relevant scene details for accurate segmentation.
+<img src="./generated/gld_lcim/P1Scene01_frame_step_75.png"/>
 
-Tuning Farneback's algorithm parameters has been a critical task. The settings have been adjusted to improve the detection of optical flow in sky regions, revealing a correlation with L1 differences. This indicates that Farneback's optical flow, with the right parameters, can be a reliable metric for distinguishing scene types or cloud coverage.
+This visual representation for Scene 1 is a part of a series where each scene is individually analysed. The plots are meticulously crafted to provide insights into the lighting dynamics specific to each scene, capturing subtle nuances and patterns of natural light variations.
 
-### Week 08
+In addition to individual scene analysis, we have compiled an overarching box plot that amalgamates the results from all scenes, presenting a holistic view of the study. Boxplots for parts 1 to 3 of the study are shown below:
 
-#### Objectives
+<img src="./generated/gld_lcim/statistics_part1.png"/>
 
-- [x] Integrate segmentation and optical flow models for enhanced analysis.
+<img src="./generated/gld_lcim/statistics_part2.png"/>
 
-#### Progress
+<img src="./generated/gld_lcim/statistics_part3.png"/>
 
-Implemented a hybrid approach, utilizing the DeepLabV3 model for sky/ground separation, and the Pretrained DeepLabV3 with ResNet101 backbone, recalibrated to identify three primary classes: person, vehicle, and background. This model, originally designed for 21 classes, now offers more focused segmentation. Additionally, the pretrained RAFT model was applied for optical flow estimation, allowing for distinct optical flow magnitudes for each class and enabling a deeper understanding of scene dynamics.
+This collective plot serves as a crucial tool for understanding broader lighting trends and variations across different scenes. It not only highlights the diversity in lighting conditions but also facilitates a comparative analysis, enabling us to discern patterns that may not be apparent when examining scenes individually.
 
-#### Challenges and Solutions
+### 5.2. Reproducing the Results
 
-**Key Issues to Address:**
-1. **Segmentation Accuracy:** The effectiveness of object segmentation is currently influencing the overall results. Improvements in this area could lead to more accurate analyses.
-2. **Temporal Consistency:** There is a lack of temporal coherence in the segmentation and optical flow estimates across consecutive frames.
-3. **Object Dominance:** Large or nearby objects are disproportionately impacting the outcomes, skewing the analysis.
-4. **Vegetation Classification:** The absence of 'vegetation' as a class in the pretrained model leads to its categorization as 'background,' which may not always be appropriate.
+To reproduce the results, follow these steps:
 
-### Week 09
+1. Process the LDR videos using the instructions in the [LDR Image Processing](#1-ldr-image-processing) section.
 
-#### Objectives
+2. Go to the [gld_lcim](/src/gld_lcim/) directory:
 
-- [x] Implement Grounded-Segment-Anything (GSAM) for semantic segmentation.
+    ```bash
+    cd src/gld_lcim/ # On Windows use `cd src\gld_lcim\`
+    ```
 
-#### Progress
+3. To generate individual plots for each scene, run the following command:
 
-GSAM, capable of segmenting classes based on textual descriptions in a zero-shot manner, was employed to circumvent the need for costly pretraining for new classes, such as vegetation. Initial results indicate promising performance, though some inaccuracies in class identification or object omission were observed.
+    ```bash
+    python scenes_analysis.py
+    ```
+    Generated images will be saved in the [gld_lcim](/generated/gld_lcim/) directory.
 
-#### Challenges and Solutions
+4. To generate the box plot, run the following command:
 
-The primary challenge lies in the model's size, making it cumbersome for video application. Recent developments in light segment models layered on the grounding dino model offer a potential speed enhancement, though implementation on video remains complex.
+    ```bash
+    python scenes_plotting.py
+    ```
+    Generated images will be saved in the [gld_lcim](/generated/gld_lcim/) directory.
 
-### Week 10
+## Motion Analysis
 
-#### Objectives
+## Motion Analysis
 
-- [x] Enhance visualization for GSAM model outcomes.
-- [x] Develop a new graph with improved cloud segmentation from prior work.
+### 5.1. Description
 
-#### Progress
+In this section of our study, we concentrate on evaluating ground-level movements within various urban and natural scenes. This analysis is pivotal in understanding the dynamic interplay between different elements in an environment, such as people, vehicles, and vegetation. Our approach utilises advanced deep learning models and algorithms to dissect and quantify these movements, providing a detailed understanding of how these elements interact and contribute to the overall dynamics of the scenes.
 
-Improvements in the GSAM model visualizations were achieved, particularly with the addition of the mean number of objects per frame in videos for each class (person, vegetation, vehicle). Using the previous models for cloud segmentation, a new graph was developed to better capture the cloud coverage in Dong's HDR videos.
+The primary objective is to analyse ground-level movements including movements of people, vehicles, and vegetation in different scenes. We employ the Grounded-Segment-Anything Model (GSAM) for semantic segmentation. This model showcases a zero-shot capability, effectively segmenting images based on textual descriptions. Its versatility allows for precise segmentation of diverse objects in a scene, ranging from pedestrians to vehicles. To measure optical flow, we use the Recurrent All-pairs Field Transforms (RAFT) model. This deep learning-based method excels in capturing the movement of objects with high accuracy, providing insights into the directional and magnitude aspects of flow within the scenes.
 
-#### Challenges and Solutions
+Our study categorises 15 scenes into three distinct types based on the level and type of activity observed:
+  1. Scenes with only passive movements (e.g., movements due to wind).
+  2. Scenes including passive movements along with people and animals.
+  3. Scenes encompassing passive movements, people, animals, and road traffic.
 
-During the course of this project, we employed three distinct methods for cloud segmentation. Firstly, we fine-tuned the DeepLabV3 model on a robust dataset tailored for segmentation tasks. Secondly, we implemented a supervised approach that leverages superpixels and a dedicated feature space to discern sky from clouds. Lastly, we utilized a graph-cut algorithm that processes High Dynamic Range (HDR) values extracted from Dong's HDR video footage.
+ For each object detected, we calculate the optical flow magnitude, which quantifies the movement intensity. This metric is crucial for understanding the relative activity levels in different scenes. The count of pedestrians and vehicles in each scene is averaged to provide a comparative view of human and vehicular activity. Specifically for vegetation, we focus on the mean optical flow magnitudes as opposed to counting individual objects, given the continuous and interconnected nature of vegetative movements.
 
-Each method presents unique benefits and challenges. The DeepLabV3 model excels in handling complex scenarios, such as images containing direct sunlight or clear skies devoid of clouds. For such demanding cases, its advanced feature extraction capabilities prove invaluable. Conversely, in situations where the cloud and sky present a stark contrast, resulting in a bimodal distribution of pixel values, the graph-cut algorithm is preferred. It offers enhanced precision, delivering more nuanced segmentation results for simpler images.
+A crucial component of our analysis is the visual representation of the data, which aids in better understanding and comparison of movement dynamics across different scenes. For instance, the plot below contrasts the activities in various scenes, highlighting the presence or absence of pedestrians and vehicles:
 
-_Note: This README is a template and will be updated as the project progresses._
+<img src="./generated/motion/part3_class_comparison.png"/>
+
+This plot vividly illustrates the varying levels of activity, with the first five scenes showing no pedestrian movement and the remaining ten depicting varying degrees of pedestrian activity. Similarly, the first ten scenes lack vehicular movement, while the last five show active road traffic.
+
+### 5.2. Reproducing the Results
+
+To reproduce the results, follow these steps:
+
+1. Process the LDR videos using the instructions in the [LDR Image Processing](#1-ldr-image-processing) section.
+
+2. Go to the [motion](/src/motion/) directory:
+
+    ```bash
+    cd src/motion/ # On Windows use `cd src\motion\`
+    ```
+
+3. To generate individual plots for each scene, run the following command:
+
+    ```bash
+    python scenes_analysis.py
+    ```
+    Generated images will be saved in the [motion](/generated/motion/) directory.
+
+4. To generate the box plot, run the following command:
+
+    ```bash
+    python scenes_plotting.py
+    ```
+    Generated images will be saved in the [motion](/generated/motion/) directory.
+
+## References
+
+1. Chen, L., Papandreou, G., Schroff, F., & Adam, H. (2017). Rethinking Atrous Convolution for Semantic Image Segmentation. arXiv:1706.05587. [Link](https://ar5iv.labs.arxiv.org/html/1706.05587)
+
+2. I. Sgibnev et al., "Deep semantic segmentation for off-road autonomous driving," The International Archives of Photogrammetry, Remote Sensing and Spatial Information Sciences, vol. 43, pp. 617–622, 2020.
+
+3. Mihail, Radu Paul, Scott Workman, Zach Bessinger, and Nathan Jacobs. "Sky Segmentation in the Wild: An Empirical Study." In IEEE Winter Conference on Applications of Computer Vision (WACV), 2016. doi:10.1109/WACV.2016.7477637.
+
+4. Dev, Soumyabrata, Yee Hui Lee, and Stefan Winkler. "Systematic Study of Color Spaces and Components for the Segmentation of Sky/Cloud Images." School of Electrical and Electronic Engineering, Nanyang Technological University (NTU), Singapore, and Advanced Digital Sciences Center (ADSC), University of Illinois at Urbana-Champaign, Singapore. 2017. arXiv:1701.04520. [Link](https://arxiv.org/pdf/1701.04520.pdf)
+
+5. Xia, Weihao, Cheng, Zhanglin, Yang, Yujiu, & Xue, Jing-Hao. (2020). Cooperative Semantic Segmentation and Image Restoration in Adverse Environmental Conditions. arXiv:1911.00679. [Link](https://arxiv.org/abs/1911.00679)
+
+6. Cordts, Marius, Omran, Mohamed, Ramos, Sebastian, Rehfeld, Timo, Enzweiler, Markus, Benenson, Rodrigo, Franke, Uwe, Roth, Stefan, & Schiele, Bernt. (2016). The Cityscapes Dataset for Semantic Urban Scene Understanding. arXiv:1604.01685. [Link](https://arxiv.org/abs/1604.01685)
+
+7. Neuhold, Gerhard, Ollmann, Tobias, Bulò, Samuel Rota, & Kontschieder, Peter. (2017). The Mapillary Vistas Dataset for Semantic Understanding of Street Scenes. In Proceedings of the 2017 IEEE International Conference on Computer Vision (ICCV), pp. 5000-5009. doi:10.1109/ICCV.2017.534.
+
+8. Mihail, Radu Paul, Workman, Scott, Bessinger, Zach, & Jacobs, Nathan. (2016). Sky Segmentation in the Wild: An Empirical Study. In Proceedings of the IEEE Winter Conference on Applications of Computer Vision (WACV), pp. 1-6. doi:10.1109/WACV.2016.7477637. Acceptance rate: 42.3%. [PDF](https://drive.google.com/file/d/1-76FxbBQW8oD2m0JnCkZ7RTz-t541TiD/view?usp=sharing). Project: [SkyFinder](https://mvrl.github.io/SkyFinder/).
+
+9. Xiao, Jianxiong, Hays, James, Ehinger, Krista A., Oliva, Aude, & Torralba, Antonio. (2010). SUN database: Large-scale scene recognition from abbey to zoo. In Proceedings of the 2010 IEEE Computer Society Conference on Computer Vision and Pattern Recognition, pp. 3485-3492. doi:10.1109/CVPR.2010.5539970.
+
+10. Dev, Soumyabrata, Lee, Yee Hui, & Winkler, Stefan. (2016). Color-based Segmentation of Sky/Cloud Images From Ground-based Cameras. arXiv:1606.03669. [Link](https://arxiv.org/abs/1606.03669)
+
+11. Zhuang, Juntang, Tang, Tommy, Ding, Yifan, Tatikonda, Sekhar, Dvornek, Nicha, Papademetris, Xenophon, & Duncan, James. (2020). AdaBelief Optimizer: Adapting Stepsizes by the Belief in Observed Gradients. In Proceedings of the Conference on Neural Information Processing Systems.

@@ -1,11 +1,4 @@
-# Data
-data/preprocessing/*
-data/sky_ground_segmentation/*
-data/sky_cloud_segmentation/*
-data/BACKUP/*
-data/dong/*
-data/gsam/*
-data/cloud_percentage.pkl
+data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
