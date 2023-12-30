@@ -2,7 +2,9 @@
 
 ## Introduction
 
-This GitHub repository is dedicated to the research project "Daylight Dynamics: A New Approach to Analysing Luminous Variability". It provides a centralised platform for accessing all materials related to our study on the temporal dynamics of natural light and its implications in daylighting and built environments.
+This GitHub repository is dedicated to the master semester project 'Daylight Variability and Scene Dynamics: Analyzing Lighting and Motion Dynamics in Urban Scenes.' It serves as a centralized platform for accessing all project-related materials, offering a comprehensive exploration of two distinct yet interconnected aspects: the temporal dynamics of natural light and the intricate motion patterns within urban environments.
+
+The research delves into the ever-changing lighting conditions in urban areas, providing insights into daylight variability. Simultaneously, we investigate the dynamic motion patterns that shape urban scenes. Within this repository, you'll find a rich collection of research materials, datasets, code, and project findings, providing an invaluable resource for the study of these dual aspects of urban scenes.
 
 ## Repository Contents
 
@@ -82,7 +84,6 @@ To reproduce the results, follow these steps:
     │   │   ├ P2OvercastXX.mp4
     └   └   └ P3SceneXX.mp4
     ```
-
 
 2. Go to the [src/processing](/src/processing/) directory:
     ```bash
