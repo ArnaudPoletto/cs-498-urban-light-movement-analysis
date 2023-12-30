@@ -95,7 +95,7 @@ To reproduce the results, follow these steps:
     python processing.py --num_processes <num_processes> --mask_reframe <mask_reframe>
     ```
     Where:
-    * `<num_processes>` is the number of processes to use for parallel processing. If not specified, the default value is `1`.
+    * `<num_processes>` is the number of processes to use for parallel processing. If not specified, the default value is your CPU's number of cores.
     * `<mask_reframe>` whether to reframe the video or not. If not specified, the default value is `False`.
 
     Processed videos will be saved in the [data/ldr/processed](/data/ldr/processed/) or [data/ldr/processed_reframed](/data/ldr/processed_reframed/) directory, depending on the processing method selected.
@@ -221,7 +221,7 @@ Here are examples of training and validation samples from our custom dataset ([s
 
 ### 3.2. Trained Weights
 
-Weights for the DeepLabV3 with ResNet101 backbone can be found [here](/data/sky_cloud_segmentation/models/deeplabv3resnet101_ranger_pretrained.pth)
+Weights for the DeepLabV3 with ResNet101 backbone can be found [here](/data/sky_cloud_segmentation/models/deeplabv3resnet101_ranger_pretrained.pth).
 
 ### 3.3. Errors and Limitations
 
@@ -247,7 +247,7 @@ To reproduce the results, follow these steps:
 
 ### 4.1. Description
 
-We employ the [cloud segmentation](#2-cloud-segmentation) model to estimate cloud coverage in both Low Dynamic Range (LDR) and High Dynamic Range (HDR) scenes. For HDR scenes, an essential preprocessing step is tone-mapping, which adjusts the scenes to a standard dynamic range suitable for analysis. The model processes these scenes to generate a segmentation mask, differentiating between sky and clouds. This mask is then utilised to accurately estimate cloud coverage, providing critical data for analysing the impact of clouds on urban daylight conditions.
+We employ the [cloud segmentation](#3-cloud-segmentation) model to estimate cloud coverage in both Low Dynamic Range (LDR) and High Dynamic Range (HDR) scenes. For HDR scenes, an essential preprocessing step is tone-mapping, which adjusts the scenes to a standard dynamic range suitable for analysis. The model processes these scenes to generate a segmentation mask, differentiating between sky and clouds. This mask is then utilised to accurately estimate cloud coverage, providing critical data for analysing the impact of clouds on urban daylight conditions.
 
 The results of this analysis on HDR images are shown below:
 
@@ -326,13 +326,11 @@ To reproduce the results, follow these steps:
 
 ## Motion Analysis
 
-## Motion Analysis
-
 ### 5.1. Description
 
 In this section of our study, we concentrate on evaluating ground-level movements within various urban and natural scenes. This analysis is pivotal in understanding the dynamic interplay between different elements in an environment, such as people, vehicles, and vegetation. Our approach utilises advanced deep learning models and algorithms to dissect and quantify these movements, providing a detailed understanding of how these elements interact and contribute to the overall dynamics of the scenes.
 
-The primary objective is to analyse ground-level movements including movements of people, vehicles, and vegetation in different scenes. We employ the Grounded-Segment-Anything Model (GSAM) for semantic segmentation. This model showcases a zero-shot capability, effectively segmenting images based on textual descriptions. Its versatility allows for precise segmentation of diverse objects in a scene, ranging from pedestrians to vehicles. To measure optical flow, we use the Recurrent All-pairs Field Transforms (RAFT) model. This deep learning-based method excels in capturing the movement of objects with high accuracy, providing insights into the directional and magnitude aspects of flow within the scenes.
+The primary objective is to analyse ground-level movements including movements of people, vehicles, and vegetation in different scenes. We employ the Grounded-Segment-Anything Model (GSAM) for semantic segmentation [12]. This model showcases a zero-shot capability, effectively segmenting images based on textual descriptions. Its versatility allows for precise segmentation of diverse objects in a scene, ranging from pedestrians to vehicles. To measure optical flow, we use the Recurrent All-pairs Field Transforms (RAFT) model [13]. This deep learning-based method excels in capturing the movement of objects with high accuracy, providing insights into the directional and magnitude aspects of flow within the scenes.
 
 Our study categorises 15 scenes into three distinct types based on the level and type of activity observed:
   1. Scenes with only passive movements (e.g., movements due to wind).
@@ -396,3 +394,9 @@ To reproduce the results, follow these steps:
 10. Dev, Soumyabrata, Lee, Yee Hui, & Winkler, Stefan. (2016). Color-based Segmentation of Sky/Cloud Images From Ground-based Cameras. arXiv:1606.03669. [Link](https://arxiv.org/abs/1606.03669)
 
 11. Zhuang, Juntang, Tang, Tommy, Ding, Yifan, Tatikonda, Sekhar, Dvornek, Nicha, Papademetris, Xenophon, & Duncan, James. (2020). AdaBelief Optimizer: Adapting Stepsizes by the Belief in Observed Gradients. In Proceedings of the Conference on Neural Information Processing Systems.
+
+12. Grounded-SAM Contributors. (2023). Grounded-Segment-Anything (Version 1.2.0) [Software]. Retrieved from https://github.com/IDEA-Research/Grounded-Segment-Anything. Apache-2.0 License.
+
+13. Teed, Zachary, & Deng, Jia. (2020). RAFT: Recurrent All-Pairs Field Transforms for Optical Flow. arXiv:2003.12039. [Link](https://arxiv.org/abs/2003.12039)
+
+
