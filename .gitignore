@@ -1,4 +1,11 @@
-data/
+data/*
+!data/gld_lcim/
+!data/hdr/
+!data/motion/
+!data/sky_cloud_segmentation/models/
+!data/sky_ground_segmentation/models/
+!left_mask.png
+!right_mask.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
