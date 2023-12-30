@@ -1,5 +1,9 @@
 # Daylight Variability and Scene Dynamics: Analysing Light and Movement in Urban Spaces
 
+## TODOs
+
+1. Add related documents to repository (report, presentation slides...)
+
 ## Introduction
 
 This GitHub repository is dedicated to the master semester project 'Daylight Variability and Scene Dynamics: Analyzing Lighting and Motion Dynamics in Urban Scenes.' It serves as a centralized platform for accessing all project-related materials, offering a comprehensive exploration of two distinct yet interconnected aspects: the temporal dynamics of natural light and the intricate motion patterns within urban environments.

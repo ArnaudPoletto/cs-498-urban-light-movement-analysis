@@ -138,10 +138,10 @@ if __name__ == "__main__":
     # Set seed for deterministic results
     set_seed(SEED)
 
+    # Get model type
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_type", type=str, default='deeplabv3mobilenetv3large')
     args = parser.parse_args()
-
     model_type = args.model_type
 
     train_loader, _, val_loader = get_dataloaders(TRAIN_SPLIT, TEST_SPLIT, BATCH_SIZE)
